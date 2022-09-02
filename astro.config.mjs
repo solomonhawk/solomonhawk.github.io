@@ -8,5 +8,12 @@ import mdx from '@astrojs/mdx';
 // https://astro.build/config
 export default defineConfig({
   site: 'https://solomonhawk.com',
-  integrations: [mdx(), react(), tailwind(), sitemap()]
+  integrations: [
+    mdx(),
+    react(),
+    sitemap(),
+    tailwind({
+      config: { applyBaseStyles: false },
+    })
+  ]
 });

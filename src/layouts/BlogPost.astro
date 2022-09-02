@@ -25,9 +25,11 @@ const {
 		<PageHeader />
 
 		<main id="content" class="container mx-auto max-w-3xl px-4 my-4">
-			<BlogPost {title} {author} {heroImage} {publishDate} {alt} {tags}>
-				<slot />
-			</BlogPost>
+			<div class="mt-8 sm:mt-12 md:mt-16">
+				<BlogPost {title} {author} {heroImage} {publishDate} {alt} {tags}>
+					<slot />
+				</BlogPost>
+			</div>
 		</main>
 	</body>
 </html>

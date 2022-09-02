@@ -23,7 +23,7 @@ const { page } = Astro.props;
 ---
 
 <PageLayout content={{ title, description, permalink }}>
-	<section class="mt-8" slot="main">
+	<section slot="main">
 		<h2 class="h1 mb-heading-lg md:mb-heading-xl">
 			<span class="text-green-500">.</span><span class="text-gray-500">0x</span
 			>WR171N6{page.currentPage > 1 ? `/${page.currentPage}` : ""}

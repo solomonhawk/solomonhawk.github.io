@@ -1,0 +1,131 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+	:root {
+		--user-font-scale: 1rem - 16px;
+	}
+
+	body {
+		@apply bg-black font-body text-gray-200 dark:antialiased;
+		font-size: 1rem;
+		font-size: clamp(0.875rem, 0.4626rem + 1.0309vw + var(--user-font-scale), 1.125rem);
+		line-height: 1.625;
+	}
+
+	a {
+		@apply text-green-400 font-bold hover:underline focus:underline;
+	}
+
+	blockquote {
+		@apply relative subpixel-antialiased font-callout border-l-4 border-green-500 text-green-500 px-4 py-2 md:px-6 text-xl md:text-2xl lg:text-3xl;
+	}
+}
+
+@layer components {
+	.h1, .h2, .h3, .h4, .h5, .h6,
+	.prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
+		@apply font-mono font-normal text-white tracking-tight;
+	}
+
+	.prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
+		@apply text-yellow-400 mt-[2.5rem] md:mt-[3rem];
+	}
+
+	.h1, .prose h1 {
+		@apply text-2xl md:text-3xl lg:text-4xl;
+	}
+
+	.h2, .prose h2 {
+		@apply text-xl md:text-2xl lg:text-3xl;
+	}
+
+	.h3, .prose h3 {
+		@apply text-lg md:text-xl lg:text-2xl;
+	}
+
+	.h4, .prose h4 {
+		@apply text-base md:text-lg lg:text-xl;
+	}
+
+	.h5, .prose h5 {
+		@apply text-base md:text-lg lg:text-xl uppercase;
+	}
+
+	.h6, .prose h6 {
+		@apply text-base md:text-lg lg:text-xl uppercase font-callout;
+	}
+
+	.mb-heading-base {
+		@apply mb-[1rem];
+	}
+
+	.mb-heading-md {
+		@apply mb-[1.5rem];
+	}
+
+	.mb-heading-lg {
+		@apply mb-[2rem];
+	}
+
+	.mb-heading-xl {
+		@apply mb-[3rem];
+	}
+
+	.pagination {
+		@apply border-t border-gray-800 py-4 my-8 flex;
+	}
+
+	.hr {
+		@apply text-xs before:content-['▙▘▟▝▖▛▍▞▃▉▗▚▜'] before:text-green-500 before:font-mono before:block before:mx-auto block my-8;
+	}
+
+	.prose > * + * {
+		@apply mt-[1.25rem] md:mt-[1.5rem];
+	}
+
+	.prose ol {
+		@apply list-decimal list-inside space-y-4;
+	}
+
+	.prose ul {
+		@apply list-disc list-inside space-y-4;
+	}
+
+	.prose strong {
+		@apply font-bold;
+	}
+
+	.prose hr {
+		@apply border-none overflow-visible text-xs before:content-['▙▘▟▝▖▛▍▞▃▉▗▚▜'] before:text-green-500 before:font-mono before:block block my-8;
+	}
+
+	.prose code {
+		@apply text-yellow-200 break-words;
+	}
+
+	.astro-code {
+		@apply p-2 md:p-4 rounded border-2 border-white/10;
+	}
+
+	.blog-tags {
+		@apply flex gap-1 flex-wrap;
+	}
+
+	.blog-tags.blog-tags-lg {
+		@apply gap-2;
+	}
+
+	.blog-tag {
+		@apply rounded-tr rounded-bl bg-transparent text-gray-500 font-mono font-bold text-xs px-1 py-0.5 hover:no-underline focus:no-underline;
+		@apply before:text-green-500 before:content-['#'];
+		@apply group-hover:bg-green-500 group-hover:text-black group-hover:before:text-black;
+		@apply hover:bg-green-500 hover:text-black hover:before:text-black;
+		@apply focus:bg-green-500 focus:text-black focus:before:text-black;
+	}
+
+	.blog-tags.blog-tags-lg .blog-tag {
+		@apply text-lg p-2;
+	}
+}
