@@ -1,0 +1,20 @@
+---
+import PageLayout from "../../layouts/Page.astro";
+
+let title = "Solomon Hawk";
+let description = "Selected writing from the depths of the mind of Solomon.";
+let permalink = new URL(Astro.url.pathname, Astro.site);
+---
+
+<PageLayout content={{ title, description, permalink }}>
+  <section class="mt-8" slot="main">
+    <h2 class="h1 mb-heading-lg md:mb-heading-xl">
+      <span class="text-green-500">.</span><span class="text-gray-500">0x</span
+      >3XP3R1M3N75
+    </h2>
+
+    <div class="space-y-8">
+      <strong>Caution</strong>: this is the mad science zone.
+    </div>
+  </section>
+</PageLayout>

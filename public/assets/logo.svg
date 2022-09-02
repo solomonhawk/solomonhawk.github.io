@@ -1,0 +1,9 @@
+<svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M76 0V112H60L60 0H76Z" fill="white"/>
+<path d="M52 60H0V136H172V120H16L16 76H52L52 60Z" fill="white"/>
+<path d="M180 84H196L196 172H180L180 84Z" fill="white"/>
+<path d="M84 76H256V3.8147e-06H180V52H196V16H240V60H84V76Z" fill="white"/>
+<path d="M204 136V120H256V196H84V180H240V136H204Z" fill="white"/>
+<path d="M180 204H196V256H180V204Z" fill="white"/>
+<path d="M76 144H60L60 240H16L16 196H52L52 180H0V256H76V144Z" fill="white"/>
+</svg>

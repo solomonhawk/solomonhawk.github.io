@@ -1,0 +1,29 @@
+---
+export interface Props {
+  url: {
+    prev?: string;
+    next?: string;
+  };
+}
+
+const { url } = Astro.props;
+---
+
+{
+  (url.prev || url.next) && (
+    <div class="pagination">
+      {url.prev && (
+        <a href={url.prev} class="text-sm py-4 pr-4 mr-auto block">
+          <span class="sr-only">Previous Page</span>
+          &larr;
+        </a>
+      )}
+      {url.next && (
+        <a href={url.next} class="text-sm py-4 pl-4 ml-auto block">
+          <span class="sr-only">Next Page</span>
+          &rarr;
+        </a>
+      )}
+    </div>
+  )
+}

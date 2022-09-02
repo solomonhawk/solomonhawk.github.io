@@ -1,0 +1,15 @@
+---
+layout: '../../../layouts/BlogPost.astro'
+title: Hello, World!
+publishDate: 2022-09-01T00:00:00.000Z
+name: Solomon Hawk
+tags: [hello, world]
+---
+
+import Counter from '@components/Counter.tsx'
+
+As is tradition, I had no choice but to start with this post.
+
+<div class="my-4">
+  <Counter initialValue={1} client:load />
+</div>
