@@ -38,14 +38,14 @@ const { title, publishDate, heroImage, alt, tags } = Astro.props;
 		<h2 class="h1 mb-2 text-yellow-400">{title}</h2>
 
 		{
-			tags && (
+			tags ? (
 				<div class="blog-tags my-4 md:my-6">
 					{tags.map(
 						(tag) =>
 						<a class="blog-tag" href={`/writing/tags/${tag}`}>{tag}</a> // prettier-ignore
 					)}
 				</div>
-			)
+			) : null
 		}
 
 		<span class="hr"></span>

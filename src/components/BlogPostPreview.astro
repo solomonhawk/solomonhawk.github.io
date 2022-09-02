@@ -28,16 +28,20 @@ const { post } = Astro.props;
 			</h1>
 		</header>
 
-		{post.frontmatter.description && <p>{post.frontmatter.description}</p>}
+		{
+			post.frontmatter.description ? (
+				<p>{post.frontmatter.description}</p>
+			) : null
+		}
 
 		{
-			post.frontmatter.tags && (
+			post.frontmatter.tags ? (
 				<div class="blog-tags my-2">
 					{post.frontmatter.tags.map((tag) => (
 						<span class="blog-tag">{tag}</span>
 					))}
 				</div>
-			)
+			) : null
 		}
 	</a>
 </article>
