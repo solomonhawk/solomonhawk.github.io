@@ -2,7 +2,7 @@ import { Post } from "../types/post";
 
 export const groupTagsByCount = (posts: Post[])=> {
   const tagsByCount = posts.reduce((t, post) => {
-    for (const tag of post.frontmatter.tags) {
+    for (const tag of post.frontmatter.tags || []) {
       t[tag] = (t[tag] || 0) + 1;
     }
 
