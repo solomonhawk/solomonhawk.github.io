@@ -1,0 +1,139 @@
+---
+layout: '@layouts/BlogPost.astro'
+title: Automating a Blog Publishing Workflow with Bear and Astro
+publishDate: 1970-01-08T21:56:05.540Z
+tags: [draft, sqlite, bear, astro]
+---
+I use [Bear](_https://bear.app/_) to take notes and [Astro](_https://astro.build/_) to publish my blog. In fact I’m writing this in Bear right now as I figure out how to create a workflow that allows me to promote a note in Bear into a blog post that will appear on my site which is built with Astro.
+
+*Note*: I’m not going to cover setting up an Astro project with automated publishing in CI but that’s ultimately where I want to get to.
+
+## What am I even doing here?
+I’m new to Bear and haven’t built anything significant with Astro so I’ve got some exploring to do first. I know I’ll need to figure out a few things in order to tie everything together:
+
+1. Sort out how to query Bear’s SQLite database for the relevant data: notes, matching some tag(s)
+2. Write a script that will run this query and generate files that we can transform into astro posts (markdown with frontmatter), JSON is a suitable candidate
+3. Write a script that will take this JSON and emit the markdown/frontmatter files in the proper location (astro posts folder)
+4. Automatically commit those changes to git, create and push a commit
+
+## Working with Bear’s local data
+Bear’s [data is located](_https://bear.app/faq/Where%20are%20Bear%27s%20notes%20located/_) at: `~/Library/Group Containers/9K33E3U3T4.net.shinyfrog.bear/Application Data/database.sqlite` (I don’t think this is likely to change in the future, but just to clarify I’m currently using Version 1.9.6 9044).
+
+> Bear recommends [copying the SQLite](https://bear.app/faq/Where%20are%20Bear%27s%20notes%20located/#:~:text=on%20Bear%E2%80%99s%20database%2C-,create%20a%20copy%20first,-to%20avoid%20problems) database to avoid corrupting Bear’s data. 
+
+To be extra careful, we can do this temporarily as part of the query/publish workflow. In general, it should be safe to read data from the original, if you want to take that approach.
+
+To get started working with the data we need to understand Bear’s database schema. We can explore the database using the `sqlite3`  CLI program.
+
+Let’s start by copying the database (in this case, into my home directory) just in case:
+```bash
+$ cp ~/Library/Group Containers/9K33E3U3T4.net.shinyfrog.bear/Application Data/database.sqlite ~/database.sqlite
+```
+
+Next let’s crack open the CLI:
+```bash
+$ sqlite3 ~/database.sqlite
+```
+
+## Bear’s Database Schema
+To get a sense for how Bear structures things, we can view the full database schema by entering `.schema`. This will output a whole bunch of SQL `CREATE` statements. The main ones we’re interested in are the `ZSFNOTE` table which contains the Note data, the `ZSFNOTETAG` table which contains the Tags data, and the `Z_7TAGS` table which joins Notes and Tags in a many-to-many relationship:
+
+```sql
+CREATE TABLE ZSFNOTE ( 
+	Z_PK INTEGER PRIMARY KEY, 
+	Z_ENT INTEGER, Z_OPT INTEGER, 
+	ZARCHIVED INTEGER, ZENCRYPTED INTEGER, 
+	ZHASFILES INTEGER, ZHASIMAGES INTEGER, 
+	ZHASSOURCECODE INTEGER, 
+	ZLOCKED INTEGER, ZORDER INTEGER, 
+	ZPERMANENTLYDELETED INTEGER, 
+	ZPINNED INTEGER, 
+	ZSHOWNINTODAYWIDGET INTEGER, 
+	ZSKIPSYNC INTEGER, 
+	ZTODOCOMPLETED INTEGER, 
+	ZTODOINCOMPLETED INTEGER, 
+	ZTRASHED INTEGER, ZFOLDER INTEGER, 
+	ZPASSWORD INTEGER, 
+	ZSERVERDATA INTEGER, 
+	ZARCHIVEDDATE TIMESTAMP, 
+	ZCONFLICTUNIQUEIDENTIFIERDATE TIMESTAMP, 
+	ZCREATIONDATE TIMESTAMP, 
+	ZLOCKEDDATE TIMESTAMP, 
+	ZMODIFICATIONDATE TIMESTAMP, 
+	ZORDERDATE TIMESTAMP, 
+	ZPINNEDDATE TIMESTAMP, 
+	ZTRASHEDDATE TIMESTAMP, 
+	ZCONFLICTUNIQUEIDENTIFIER VARCHAR, 
+	ZENCRYPTIONUNIQUEIDENTIFIER VARCHAR, 
+	ZLASTEDITINGDEVICE VARCHAR, 
+	ZSUBTITLE VARCHAR, 
+	ZTEXT VARCHAR, 
+	ZTITLE VARCHAR, 
+	ZUNIQUEIDENTIFIER VARCHAR, 
+	ZENCRYPTEDDATA BLOB, 
+	ZVECTORCLOCK BLOB
+);
+CREATE TABLE Z_7TAGS ( 
+	Z_7NOTES INTEGER, 
+	Z_14TAGS INTEGER, 
+	PRIMARY KEY (Z_7NOTES, Z_14TAGS)
+);
+CREATE TABLE ZSFNOTETAG ( 
+	Z_PK INTEGER PRIMARY KEY, 
+	Z_ENT INTEGER, 
+	Z_OPT INTEGER, 
+	ZMODIFICATIONDATE TIMESTAMP, 
+	ZTITLE VARCHAR
+);
+```
+
+To view the schema for an individual table we can run `.schema <table name>`.
+
+To query for Notes with some Tags but not others and aggregate Tags into a comma-separated list:
+```sql
+SELECT n.ZTITLE as title, n.ZTEXT as markdown, n.ZMODIFICATIONDATE as modifiedAt, json_group_array(t.ZTITLE) AS tags
+  FROM ZSFNOTE n
+    JOIN Z_7TAGS as nt ON nt.Z_7NOTES = n.Z_PK
+    JOIN ZSFNOTETAG as t ON nt.Z_14TAGS = t.Z_PK
+  GROUP BY n.ZTITLE, n.ZTEXT
+  HAVING tags LIKE ‘%blog/solomonhawk%’
+     AND tags LIKE ‘%published%’;
+```
+
+Here I’m querying for Notes that are tagged with `` and `` . This is going to be dependent on how you choose to structure your Note Tags in Bear.
+
+This query uses `json_group_array` to concatenate tags into an array of strings. This is available as part of the [JSON extension](https://www.sqlite.org/json1.html) which was recently [recently included](https://sqlite.org/src/doc/json-in-core/doc/json-enhancements.md) in SQLite core (as far as I can tell).
+
+In order to programmatically get data out of SQLite, rather than interactively, we can execute some SQL from a file on disk. This file can also contain `sqlite3` commands intermixed with SQL statements which is useful for configuring the output mode (csv, json, etc.), the output destination (defaults to `stdout`), and the database to query.
+
+The following file will query the database and output JSON:
+```sql
+.mode json
+.output blog_posts.json
+.open database.sqlite
+
+SELECT ...;
+```
+
+We can invoke this query by “shoveling” the file into `sqlite3`:
+
+```bash
+$ sqlite3 < query.sql
+```
+
+Or alternatively, using `stdin`:
+
+```bash
+$ cat query.sql | sqlite3
+```
+
+If for some reason you’d prefer to keep the file as SQL only, you can accomplish the same thing using pipes and CLI arguments:
+
+```bash
+$ cat query.sql | sqlite3 database.sqlite -cmd “.mode json” | blog_posts.json
+```
+
+---
+
+### References
+[SQLite3 CLI documentation](https://www.sqlite.org/cli.html)

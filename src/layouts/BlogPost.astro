@@ -5,31 +5,31 @@ import BlogPost from "../components/BlogPost.astro";
 
 const { content } = Astro.props;
 const {
-	title,
-	description,
-	publishDate,
-	author,
-	heroImage,
-	permalink,
-	alt,
-	tags,
+  title,
+  description,
+  publishDate,
+  author,
+  heroImage,
+  permalink,
+  alt,
+  tags,
 } = content;
 ---
 
 <html lang={content.lang || "en"}>
-	<head>
-		<BaseHead {title} {description} {permalink} />
-	</head>
+  <head>
+    <BaseHead {title} {description} {permalink} />
+  </head>
 
-	<body>
-		<PageHeader />
+  <body>
+    <PageHeader />
 
-		<main id="content" class="container mx-auto max-w-3xl px-4 my-4">
-			<div class="mt-8 sm:mt-12 md:mt-16">
-				<BlogPost {title} {author} {heroImage} {publishDate} {alt} {tags}>
-					<slot />
-				</BlogPost>
-			</div>
-		</main>
-	</body>
+    <main id="content" class="container mx-auto max-w-3xl px-4 my-4">
+      <div class="mt-8 sm:mt-12 md:mt-16">
+        <BlogPost {title} {author} {heroImage} {publishDate} {alt} {tags}>
+          <slot />
+        </BlogPost>
+      </div>
+    </main>
+  </body>
 </html>

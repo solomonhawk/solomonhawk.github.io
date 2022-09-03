@@ -1,0 +1,91 @@
+import { isRight } from 'fp-ts/lib/Either';
+import { pipe } from 'fp-ts/lib/function';
+import * as O from 'fp-ts/Option';
+import fs from 'fs';
+import path from 'path';
+import { PostData, PostSchema } from '../../src/types/post';
+
+type DBPost = {
+  title: string;
+  markdown: string;
+  modifiedAt: number;
+  tags: string;
+}
+
+export async function readJSONFromStdIn(): Promise<DBPost[]> {
+  const data = await fs.promises.readFile('/dev/stdin', 'utf-8');
+  return JSON.parse(data);
+}
+
+export function parsePost(post: DBPost): O.Option<PostData> {
+  console.log(`> Parsing "${post.title}" from JSON`);
+
+  const postData: PostData = {
+    title: post.title,
+    markdown: post.markdown,
+    publishDate: new Date(post.modifiedAt).toISOString(), // @TODO: fix this date
+    tags: filterBearTags(JSON.parse(post.tags) || [])
+  };
+
+  if (isRight(PostSchema.decode(postData))) {
+    return O.some(postData);
+  }
+
+  console.log(`[!] Failed to parse "${post.title}" from JSON`);
+
+  return O.none;
+}
+
+function filterBearTags(tags: string[]): string[] {
+  return tags.map(tag => tag.replace(/^(blog\/solomonhawk\/?)|(blog\/?)/, '')).filter(Boolean).filter(tag => tag !== 'published');
+}
+
+export function convertToMarkdown(post: PostData): { filename: string, markdown: string } {
+  console.log(`> Converting "${post.title}" to MDX`);
+
+  return {
+    filename: slugify(post.title),
+    markdown: `---
+layout: '@layouts/BlogPost.astro'
+title: ${post.title}
+publishDate: ${post.publishDate}
+tags: [${post.tags?.join(', ')}]
+---
+${pipe(post.markdown?.trim() || '', stripPostTitle, stripBearTags).trim()}
+`};
+}
+
+function slugify(str: string): string {
+  return str.toLowerCase().replace(/ /g, '-');
+}
+
+/**
+ * Removes tags that are specific to Bear which are prefixed with a hashtag and
+ * may contain forward slashes.
+ *
+ * @param markdown {string} Markdown string with Bear tags
+ * @returns string with Bear tags removed
+ */
+function stripPostTitle(markdown: string): string {
+  return markdown.replace(/^#\s.*$/m, '');
+}
+
+/**
+ * Removes tags that are specific to Bear which are prefixed with a hashtag and
+ * may contain forward slashes.
+ *
+ * @param markdown {string} Markdown string with Bear tags
+ * @returns string with Bear tags removed
+ */
+function stripBearTags(markdown: string): string {
+  return markdown.replace(/\B#[\w\/]+\b/gm, '');
+}
+
+export function writePostAsMarkdown({filename, markdown}: { filename: string, markdown: string }): void {
+  const relPath = `./src/pages/writing/posts/${filename}.mdx`;
+  const fullPath = path.resolve(__dirname, '../../', relPath);
+
+  console.log(`> Writing ${relPath}`);
+
+  fs.writeFileSync(fullPath, markdown);
+}

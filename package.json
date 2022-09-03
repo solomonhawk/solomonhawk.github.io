@@ -6,7 +6,8 @@
     "dev": "astro dev",
     "start": "astro dev",
     "build": "astro check && tsc && astro build",
-    "preview": "astro preview"
+    "preview": "astro preview",
+    "import": "scripts/import"
   },
   "devDependencies": {
     "@astrojs/preact": "^0.1.2",
@@ -14,12 +15,16 @@
     "@astrojs/sitemap": "^0.1.0",
     "@astrojs/tailwind": "^0.2.1",
     "@mertasan/tailwindcss-variables": "^2.5.0",
+    "@types/node": "^18.7.14",
     "@types/react": "^18.0.18",
     "astro": "^1.0.0-beta.28",
     "autoprefixer": "^10.4.8",
+    "fp-ts": "^2.12.3",
+    "io-ts": "^2.2.18",
     "postcss": "^8.4.16",
     "react": "^18.1.0",
-    "react-dom": "^18.1.0"
+    "react-dom": "^18.1.0",
+    "ts-node": "^10.9.1"
   },
   "dependencies": {
     "@astrojs/mdx": "^0.10.3",
