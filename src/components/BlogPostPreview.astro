@@ -2,46 +2,40 @@
 import { Post } from "../types/post";
 
 export interface Props {
-	post: Post;
+  post: Post;
 }
 
 const { post } = Astro.props;
 ---
 
 <article class="group">
-	<a href={post.url} class="block hover:no-underline focus:no-underline">
-		<header>
-			<p
-				class="font-mono text-gray-500 text-sm mb-1 md:mb-2 group-hover:text-green-500"
-			>
-				{
-					new Date(post.frontmatter.publishDate).toLocaleDateString("en-US", {
-						month: "long",
-						day: "numeric",
-						year: "numeric",
-					})
-				}
-			</p>
+  <a href={post.url} class="block hover:no-underline focus:no-underline">
+    <header>
+      <p
+        class="font-mono text-gray-500 text-sm mb-1 md:mb-2 group-hover:text-green-500"
+      >
+        {
+          new Date(post.frontmatter.publishDate).toLocaleDateString("en-US", {
+            month: "long",
+            day: "numeric",
+            year: "numeric",
+          })
+        }
+      </p>
 
-			<h1 class="h1 mb-2 group-hover:underline decoration-green-500">
-				{post.frontmatter.title}
-			</h1>
-		</header>
+      <h1 class="h1 mb-2 group-hover:underline decoration-green-500">
+        {post.frontmatter.title}
+      </h1>
+    </header>
 
-		{
-			post.frontmatter.description ? (
-				<p>{post.frontmatter.description}</p>
-			) : null
-		}
-
-		{
-			post.frontmatter.tags ? (
-				<div class="blog-tags my-2">
-					{post.frontmatter.tags.map((tag) => (
-						<span class="blog-tag">{tag}</span>
-					))}
-				</div>
-			) : null
-		}
-	</a>
+    {
+      post.frontmatter.tags ? (
+        <div class="blog-tags my-2">
+          {post.frontmatter.tags.map((tag) => (
+            <span class="blog-tag">{tag}</span>
+          ))}
+        </div>
+      ) : null
+    }
+  </a>
 </article>

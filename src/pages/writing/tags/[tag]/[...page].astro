@@ -3,7 +3,7 @@ import type { GetStaticPathsOptions } from "astro";
 import type { Post } from "../../../../types/post";
 
 import PageLayout from "@layouts/Page.astro";
-import { sortPosts } from "@data/posts";
+import { filterDrafts, sortPosts } from "@data/posts";
 import BlogPagination from "@components/BlogPagination.astro";
 import BlogPostPreview from "@components/BlogPostPreview.astro";
 import { groupTagsByCount } from "@data/tags";
@@ -12,20 +12,22 @@ let title = "Solomon Hawk";
 let permalink = new URL(Astro.url.pathname, Astro.site);
 
 export async function getStaticPaths({ paginate }: GetStaticPathsOptions) {
-	const posts: Post[] = await Astro.glob("../../posts/*.mdx");
-	const tags = groupTagsByCount(posts);
+  const posts: Post[] = await Astro.glob("../../posts/*.mdx");
+  const tags = groupTagsByCount(posts);
 
-	return tags.map((t) => {
-		const taggedPosts = sortPosts(
-			posts.filter((post) => (post.frontmatter.tags || []).includes(t.tag))
-		);
+  return tags.map((t) => {
+    const taggedPosts = filterDrafts(
+      sortPosts(
+        posts.filter((post) => (post.frontmatter.tags || []).includes(t.tag))
+      )
+    );
 
-		return paginate(taggedPosts, {
-			params: { tag: t.tag },
-			props: { count: t.count, description: `Posts tagged "${t.tag}".` },
-			pageSize: 10,
-		});
-	});
+    return paginate(taggedPosts, {
+      params: { tag: t.tag },
+      props: { count: t.count, description: `Posts tagged "${t.tag}".` },
+      pageSize: 10,
+    });
+  });
 }
 
 const { page, count, description } = Astro.props;
@@ -33,17 +35,17 @@ const { tag } = Astro.params;
 ---
 
 <PageLayout content={{ title, description, permalink }}>
-	<section slot="main">
-		<h2 class="h1 mb-heading-lg md:mb-heading-xl">
-			<span class="text-green-500">.</span><span class="text-gray-500">0x</span
-			>WR171N6/{tag}{page.currentPage > 1 ? `/${page.currentPage}` : ""}
-			<span class="text-gray-500">({count} post{count === 1 ? "" : "s"})</span>
-		</h2>
+  <section slot="main">
+    <h2 class="h1 mb-heading-lg md:mb-heading-xl">
+      <span class="text-green-500">.</span><span class="text-gray-500">0x</span
+      >WR171N6/{tag}{page.currentPage > 1 ? `/${page.currentPage}` : ""}
+      <span class="text-gray-500">({count} post{count === 1 ? "" : "s"})</span>
+    </h2>
 
-		<div class="space-y-8 md:space-y-12">
-			{page.data.map((post: Post) => <BlogPostPreview post={post} />)}
-		</div>
+    <div class="space-y-8 md:space-y-12">
+      {page.data.map((post: Post) => <BlogPostPreview post={post} />)}
+    </div>
 
-		<BlogPagination url={page.url} />
-	</section>
+    <BlogPagination url={page.url} />
+  </section>
 </PageLayout>
