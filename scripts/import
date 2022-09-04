@@ -8,12 +8,8 @@ mkdir -p ./tmp
 # copy the database
 cp "$HOME/Library/Group Containers/9K33E3U3T4.net.shinyfrog.bear/Application Data/database.sqlite" ./tmp/bear.sqlite
 
-# query for posts and tags
-< ./scripts/import-from-bear/query-posts-tags.sql sqlite3 ./tmp/bear.sqlite -cmd ".mode json" > ./tmp/export.json
-
-# convert json to markdown
-< ./tmp/export.json ts-node ./scripts/import-from-bear
+# query for posts and tags, convert JSON to markdown
+sqlite3 ./tmp/bear.sqlite -cmd ".mode json" < ./scripts/import-from-bear/query-posts-tags.sql | ts-node ./scripts/import-from-bear
 
 # clean up
 rm ./tmp/bear.sqlite
-rm ./tmp/export.json
