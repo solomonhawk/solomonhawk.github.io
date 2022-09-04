@@ -51,7 +51,7 @@ title: ${post.title}
 publishDate: ${post.publishDate}
 tags: [${post.tags?.join(', ')}]
 ---
-${pipe(post.markdown?.trim() || '', stripPostTitle, stripBearTags).trim()}
+${pipe(post.markdown?.trim() || '', stripNoteTitle, stripBearTags).trim()}
 `};
 }
 
@@ -60,13 +60,12 @@ function slugify(str: string): string {
 }
 
 /**
- * Removes tags that are specific to Bear which are prefixed with a hashtag and
- * may contain forward slashes.
+ * Removes the first line of the note (H1 title).
  *
- * @param markdown {string} Markdown string with Bear tags
- * @returns string with Bear tags removed
+ * @param {string} markdown Markdown note
+ * @returns string with title removed
  */
-function stripPostTitle(markdown: string): string {
+function stripNoteTitle(markdown: string): string {
   return markdown.replace(/^#\s.*$/m, '');
 }
 
@@ -74,7 +73,7 @@ function stripPostTitle(markdown: string): string {
  * Removes tags that are specific to Bear which are prefixed with a hashtag and
  * may contain forward slashes.
  *
- * @param markdown {string} Markdown string with Bear tags
+ * @param {string} markdown Markdown string with Bear tags
  * @returns string with Bear tags removed
  */
 function stripBearTags(markdown: string): string {
