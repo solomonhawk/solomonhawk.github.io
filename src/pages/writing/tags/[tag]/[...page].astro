@@ -37,9 +37,14 @@ const { tag } = Astro.params;
 <PageLayout content={{ title, description, permalink }}>
   <section slot="main">
     <h2 class="h1 mb-heading-lg md:mb-heading-xl">
-      <span class="text-green-500">.</span><span class="text-gray-500">0x</span
-      >WR171N6/{tag}{page.currentPage > 1 ? `/${page.currentPage}` : ""}
-      <span class="text-gray-500">({count} post{count === 1 ? "" : "s"})</span>
+      <span class="sr-only">Writing Tag {tag}, Page {page.currentPage}</span>
+      <span aria-hidden>
+        <span class="text-green-500">.</span><span class="text-gray-500"
+          >0x</span
+        >WR171N6/{tag}{page.currentPage > 1 ? `/${page.currentPage}` : ""}
+        <span class="text-gray-500">({count} post{count === 1 ? "" : "s"})</span
+        >
+      </span>
     </h2>
 
     <div class="space-y-8 md:space-y-12">

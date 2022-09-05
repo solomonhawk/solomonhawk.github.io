@@ -25,8 +25,11 @@ const { page } = Astro.props;
 <PageLayout content={{ title, description, permalink }}>
   <section slot="main">
     <h2 class="h1 mb-heading-lg md:mb-heading-xl">
-      <span class="text-green-500">.</span><span class="text-gray-500">0x</span
-      >WR171N6{page.currentPage > 1 ? `/${page.currentPage}` : ""}
+      <span class="sr-only">Writing Page {page.currentPage}</span>
+      <span aria-hidden>
+        <span class="text-green-500">.</span><span class="text-gray-500">0x</span
+          >WR171N6{page.currentPage > 1 ? `/${page.currentPage}` : ""}
+      </span>
     </h2>
 
     <div class="space-y-8 md:space-y-12">
@@ -44,7 +47,7 @@ const { page } = Astro.props;
         {
           tags.map((t) => (
             <li>
-              <a class="blog-tag" href={`/writing/tags/${t.tag}`}>{t.tag}{t.count > 1 ? `${String.fromCharCode(160)}(${t.count})` : ''}</a> <!-- prettier-ignore -->
+              <a class="blog-tag" rel="prefetch" href={`/writing/tags/${t.tag}`}>{t.tag}{t.count > 1 ? `${String.fromCharCode(160)}(${t.count})` : ''}</a> <!-- prettier-ignore -->
             </li>
           ))
         }

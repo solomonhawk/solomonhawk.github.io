@@ -10,7 +10,8 @@
     "import": "scripts/import"
   },
   "devDependencies": {
-    "@astrojs/preact": "^0.1.2",
+    "@astrojs/mdx": "^0.10.3",
+    "@astrojs/prefetch": "^0.0.7",
     "@astrojs/react": "^0.1.2",
     "@astrojs/sitemap": "^0.1.0",
     "@astrojs/tailwind": "^0.2.1",
@@ -26,8 +27,5 @@
     "react-dom": "^18.1.0",
     "ts-node": "^10.9.1"
   },
-  "dependencies": {
-    "@astrojs/mdx": "^0.10.3",
-    "preact": "^10.7.2"
-  }
+  "dependencies": {}
 }

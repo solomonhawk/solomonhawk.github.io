@@ -9,7 +9,11 @@ const { post } = Astro.props;
 ---
 
 <article class="group">
-  <a href={post.url} class="block hover:no-underline focus:no-underline">
+  <a
+    href={post.url}
+    rel="prefetch"
+    class="block hover:no-underline focus:no-underline"
+  >
     <header>
       <p
         class="font-mono text-gray-500 text-sm mb-1 md:mb-2 group-hover:text-green-500"
