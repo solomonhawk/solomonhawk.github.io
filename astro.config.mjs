@@ -5,6 +5,7 @@ import tailwind from "@astrojs/tailwind";
 import sitemap from "@astrojs/sitemap";
 import mdx from '@astrojs/mdx';
 import prefetch from '@astrojs/prefetch';
+import partytown from '@astrojs/partytown';
 import compress from "astro-compress";
 import remarkCodeLabels from './plugins/remark-code-labels.mjs';
 
@@ -19,6 +20,11 @@ export default defineConfig({
     sitemap(),
     tailwind({
       config: { applyBaseStyles: false },
+    }),
+    partytown({
+      config: {
+        forward: ['dataLayer.push']
+      }
     }),
     compress()
   ],

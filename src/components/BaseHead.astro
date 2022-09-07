@@ -2,9 +2,9 @@
 import "../styles/index.css";
 
 export interface Props {
-	title: string;
-	description: string;
-	permalink: string;
+  title: string;
+  description: string;
+  permalink: string;
 }
 
 const { title, description, permalink } = Astro.props;
@@ -38,6 +38,21 @@ const { title, description, permalink } = Astro.props;
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link
-	href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz@6..96&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Share+Tech+Mono&display=swap"
-	rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz@6..96&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Share+Tech+Mono&display=swap"
+  rel="stylesheet"
 />
+
+<!-- Google tag (gtag.js) -->
+<script
+  type="text/partytown"
+  async
+  src="https://www.googletagmanager.com/gtag/js?id=G-EJ67MTJ8RD"
+></script>
+<script type="text/partytown">
+  window.dataLayer = window.dataLayer || [];
+  function gtag() {
+    dataLayer.push(arguments);
+  }
+  gtag("js", new Date());
+  gtag("config", "G-EJ67MTJ8RD");
+</script>
