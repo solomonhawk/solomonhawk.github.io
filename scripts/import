@@ -2,14 +2,12 @@
 
 set -e
 
-# create /tmp directory if it doesn't exist
-mkdir -p ./tmp
+# create temporary directory
+TMPFOLDER=$(mktemp -d)
+TMPFILE="$TMPFOLDER/bear-database.sqlite"
 
 # copy the database
-cp "$HOME/Library/Group Containers/9K33E3U3T4.net.shinyfrog.bear/Application Data/database.sqlite" ./tmp/bear.sqlite
+cp "$HOME/Library/Group Containers/9K33E3U3T4.net.shinyfrog.bear/Application Data/database.sqlite" "$TMPFILE"
 
 # query for posts and tags, convert JSON to markdown
-sqlite3 ./tmp/bear.sqlite -cmd ".mode json" < ./scripts/import-from-bear/query-posts-tags.sql | ts-node ./scripts/import-from-bear
-
-# clean up
-rm ./tmp/bear.sqlite
+sqlite3 "$TMPFILE" -cmd ".mode json" < ./scripts/import-from-bear/query-posts-tags.sql | ts-node ./scripts/import-from-bear
