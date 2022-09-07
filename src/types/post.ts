@@ -4,6 +4,7 @@ import * as t from 'io-ts';
 
 const PostSchemaRequired = t.type({
   title: t.string,
+  description: t.string,
   publishDate: t.string,
 });
 

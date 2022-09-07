@@ -8,9 +8,6 @@ import BlogPagination from "@components/BlogPagination.astro";
 import BlogPostPreview from "@components/BlogPostPreview.astro";
 import { groupTagsByCount } from "@data/tags";
 
-let title = "Solomon Hawk";
-let permalink = new URL(Astro.url.pathname, Astro.site);
-
 export async function getStaticPaths({ paginate }: GetStaticPathsOptions) {
   const posts: Post[] = await Astro.glob("../../posts/*.mdx");
   const tags = groupTagsByCount(posts);
@@ -32,13 +29,16 @@ export async function getStaticPaths({ paginate }: GetStaticPathsOptions) {
 
 const { page, count, description } = Astro.props;
 const { tag } = Astro.params;
+
+let title = `Solomon Hawk - Writing Tag ${tag}`;
+let permalink = new URL(Astro.url.pathname, Astro.site);
 ---
 
 <PageLayout content={{ title, description, permalink }}>
   <section slot="main">
     <h2 class="h1 mb-heading-lg md:mb-heading-xl">
       <span class="sr-only">Writing Tag {tag}, Page {page.currentPage}</span>
-      <span aria-hidden>
+      <span aria-hidden="true">
         <span class="text-green-500">.</span><span class="text-gray-500"
           >0x</span
         >WR171N6/T465/{tag}{page.currentPage > 1 ? `/${page.currentPage}` : ""}

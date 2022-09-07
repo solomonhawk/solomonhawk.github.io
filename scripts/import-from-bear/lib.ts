@@ -22,6 +22,8 @@ export function parsePost(post: DBPost): O.Option<PostData> {
 
   const postData: PostData = {
     title: post.title,
+    // TODO: can I do better to determine a description for this post?
+    description: post.title,
     markdown: post.markdown,
     publishDate: postDate(post.modifiedAt),
     tags: filterBearTags(JSON.parse(post.tags) || [])

@@ -82,15 +82,23 @@
 	}
 
 	.prose > * + * {
-		@apply mt-[1.25rem] md:mt-[1.5rem];
+		@apply mt-[1.25rem] md:mt-[1.5rem] lg:mt-[2rem];
 	}
 
 	.prose ol {
 		@apply list-decimal list-inside space-y-4;
 	}
 
+	.prose ol li::marker {
+		@apply text-yellow-400 font-bold;
+	}
+
 	.prose ul {
 		@apply list-disc list-inside space-y-4;
+	}
+
+	.prose ul ul {
+		@apply mt-[1rem] ml-[1rem] md:ml-[1.5rem] lg:ml-[2rem];
 	}
 
 	.prose strong {
@@ -102,7 +110,7 @@
 	}
 
 	.prose code {
-		@apply text-yellow-200 break-words;
+		@apply text-yellow-400 break-words;
 	}
 
 	.prose a code {
@@ -118,7 +126,7 @@
 	}
 
 	.blog-tag {
-		@apply rounded-tr rounded-bl bg-transparent text-gray-500 font-mono font-bold text-xs px-1 py-0.5 hover:no-underline focus:no-underline;
+		@apply rounded-tr rounded-bl bg-transparent text-gray-400 font-mono font-bold text-xs px-1 py-0.5 hover:no-underline focus:no-underline;
 		@apply before:text-green-500 before:content-['#'];
 		@apply group-hover:bg-green-500 group-hover:text-black group-hover:before:text-black;
 		@apply hover:bg-green-500 hover:text-black hover:before:text-black;
