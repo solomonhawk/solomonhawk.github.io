@@ -1,7 +1,7 @@
 ---
 layout: '@layouts/BlogPost.astro'
 title: Automating a Blog Publishing Workflow with Bear and Astro
-publishDate: 1970-01-08T21:56:05.540Z
+publishDate: 2022-09-07T04:00:00.000Z
 tags: [draft, sqlite, bear, astro]
 ---
 I use [Bear](_https://bear.app/_) to take notes and [Astro](_https://astro.build/_) to publish my blog. In fact I’m writing this in Bear right now as I figure out how to create a workflow that allows me to promote a note in Bear into a blog post that will appear on my site which is built with Astro.
@@ -9,50 +9,58 @@ I use [Bear](_https://bear.app/_) to take notes and [Astro](_https://astro.build
 *Note*: I’m not going to cover setting up an Astro project with automated publishing in CI but that’s ultimately where I want to get to.
 
 ## What am I even doing here?
-I’m new to Bear and haven’t built anything significant with Astro so I’ve got some exploring to do first. I know I’ll need to figure out a few things in order to tie everything together:
+I’m new to Bear and haven’t built anything significant with Astro so I’ve got some exploring to do first. I know I’ll need to figure out a few things in order to tie it all together:
 
 1. Sort out how to query Bear’s SQLite database for the relevant data: notes, matching some tag(s)
-2. Write a script that will run this query and generate files that we can transform into astro posts (markdown with frontmatter), JSON is a suitable candidate
-3. Write a script that will take this JSON and emit the markdown/frontmatter files in the proper location (astro posts folder)
+2. Write a script that will run this query and generate files that I can transform into astro posts (markdown with frontmatter), JSON is a suitable candidate
+3. Write a script that will take this JSON and emit the markdown/frontmatter files in the proper location so Astro can pick them up
 4. Automatically commit those changes to git, create and push a commit
 
 ## Working with Bear’s local data
-Bear’s [data is located](_https://bear.app/faq/Where%20are%20Bear%27s%20notes%20located/_) at: `~/Library/Group Containers/9K33E3U3T4.net.shinyfrog.bear/Application Data/database.sqlite` (I don’t think this is likely to change in the future, but just to clarify I’m currently using Version 1.9.6 9044).
+Bear’s [data is located](_https://bear.app/faq/Where%20are%20Bear%27s%20notes%20located/_) at: `~/Library/Group Containers/9K33E3U3T4.net.shinyfrog.bear/Application Data/database.sqlite` (I don’t think this is likely to change in the future, but just in case I’m currently using Bear Version 1.9.6 9044).
 
 > Bear recommends [copying the SQLite](https://bear.app/faq/Where%20are%20Bear%27s%20notes%20located/#:~:text=on%20Bear%E2%80%99s%20database%2C-,create%20a%20copy%20first,-to%20avoid%20problems) database to avoid corrupting Bear’s data. 
 
-To be extra careful, we can do this temporarily as part of the query/publish workflow. In general, it should be safe to read data from the original, if you want to take that approach.
+To be extra careful, I’ll do this temporarily as part of the query/publish workflow. In general, it should be safe to read data from the original, if you want to take that approach.
 
-To get started working with the data we need to understand Bear’s database schema. We can explore the database using the `sqlite3`  CLI program.
+To get started working with the data I need to understand Bear’s database schema which I’m exploring using the `sqlite3`  CLI program.
 
-Let’s start by copying the database (in this case, into my home directory) just in case:
+First I’ll make a copy of the database (in this case, into my home directory) just in case:
 ```bash
-$ cp ~/Library/Group Containers/9K33E3U3T4.net.shinyfrog.bear/Application Data/database.sqlite ~/database.sqlite
+$ cp "~/Library/Group Containers/9K33E3U3T4.net.shinyfrog.bear/Application Data/database.sqlite" ~/database.sqlite
 ```
 
-Next let’s crack open the CLI:
+Then crack open the CLI:
 ```bash
 $ sqlite3 ~/database.sqlite
+SQLite version 3.37.0 2021-12-09 01:34:53
+Enter ".help" for usage hints.
+sqlite>
 ```
 
 ## Bear’s Database Schema
-To get a sense for how Bear structures things, we can view the full database schema by entering `.schema`. This will output a whole bunch of SQL `CREATE` statements. The main ones we’re interested in are the `ZSFNOTE` table which contains the Note data, the `ZSFNOTETAG` table which contains the Tags data, and the `Z_7TAGS` table which joins Notes and Tags in a many-to-many relationship:
+To get a sense for how Bear structures things, I’m examining the full database schema by entering `.schema`. This will output a whole bunch of SQL `CREATE` statements. The main ones I’mm interested in are the `ZSFNOTE` table which contains the Note data, the `ZSFNOTETAG` table which contains the Tags data, and the `Z_7TAGS` table which joins Notes and Tags in a many-to-many relationship (the following is a subset of the full schema, formatted to make it a bit easier to read):
 
 ```sql
 CREATE TABLE ZSFNOTE ( 
 	Z_PK INTEGER PRIMARY KEY, 
-	Z_ENT INTEGER, Z_OPT INTEGER, 
-	ZARCHIVED INTEGER, ZENCRYPTED INTEGER, 
-	ZHASFILES INTEGER, ZHASIMAGES INTEGER, 
+	Z_ENT INTEGER, 
+	Z_OPT INTEGER, 
+	ZARCHIVED INTEGER, 
+	ZENCRYPTED INTEGER, 
+	ZHASFILES INTEGER, 
+	ZHASIMAGES INTEGER, 
 	ZHASSOURCECODE INTEGER, 
-	ZLOCKED INTEGER, ZORDER INTEGER, 
+	ZLOCKED INTEGER, 
+	ZORDER INTEGER, 
 	ZPERMANENTLYDELETED INTEGER, 
 	ZPINNED INTEGER, 
 	ZSHOWNINTODAYWIDGET INTEGER, 
 	ZSKIPSYNC INTEGER, 
 	ZTODOCOMPLETED INTEGER, 
 	ZTODOINCOMPLETED INTEGER, 
-	ZTRASHED INTEGER, ZFOLDER INTEGER, 
+	ZTRASHED INTEGER, 
+	ZFOLDER INTEGER, 
 	ZPASSWORD INTEGER, 
 	ZSERVERDATA INTEGER, 
 	ZARCHIVEDDATE TIMESTAMP, 
@@ -87,41 +95,42 @@ CREATE TABLE ZSFNOTETAG (
 );
 ```
 
-To view the schema for an individual table we can run `.schema <table name>`.
+To view the schema for an individual table you can run `.schema <table name>`.
 
-To query for Notes with some Tags but not others and aggregate Tags into a comma-separated list:
+What I really need is to query for Notes with some Tags but not others and aggregate Tags into a comma-separated list:
 ```sql
-SELECT n.ZTITLE as title, n.ZTEXT as markdown, n.ZMODIFICATIONDATE as modifiedAt, json_group_array(t.ZTITLE) AS tags
+SELECT n.ZTITLE as title, n.ZTEXT as markdown, datetime(n.ZMODIFICATIONDATE, 'unixepoch', '+31 years') as modifiedAt, json_group_array(t.ZTITLE) AS tags
   FROM ZSFNOTE n
     JOIN Z_7TAGS as nt ON nt.Z_7NOTES = n.Z_PK
     JOIN ZSFNOTETAG as t ON nt.Z_14TAGS = t.Z_PK
   GROUP BY n.ZTITLE, n.ZTEXT
-  HAVING tags LIKE ‘%blog/solomonhawk%’
-     AND tags LIKE ‘%published%’;
+  HAVING tags LIKE ‘%blog/solomonhawk%’;
 ```
 
-Here I’m querying for Notes that are tagged with `` and `` . This is going to be dependent on how you choose to structure your Note Tags in Bear.
+Here I’m querying for Notes that are tagged with `#blog/solomonhawk`. This is going to be dependent on how you choose to structure your Note Tags in Bear.
 
-This query uses `json_group_array` to concatenate tags into an array of strings. This is available as part of the [JSON extension](https://www.sqlite.org/json1.html) which was recently [recently included](https://sqlite.org/src/doc/json-in-core/doc/json-enhancements.md) in SQLite core (as far as I can tell).
+*Note*: I had some trouble formatting the timestamp values Bear stores for `z.MODIFICATIONDATE`. Eventually I found a way to get the result I was looking for by using SQLite’s [datetime](http://www.sqlite.org/matrix/lang_datefunc.html#R-64048-35950-52196-42061-52178-11098-48520-29989) function to format the date as a `"unixepoch"`and adding 31 years. `¯\_(ツ)_/¯`
 
-In order to programmatically get data out of SQLite, rather than interactively, we can execute some SQL from a file on disk. This file can also contain `sqlite3` commands intermixed with SQL statements which is useful for configuring the output mode (csv, json, etc.), the output destination (defaults to `stdout`), and the database to query.
+I’m also using `json_group_array` to concatenate tags into an array of strings. This is available as part of the [JSON extension](https://www.sqlite.org/json1.html) which was [recently included](https://sqlite.org/src/doc/json-in-core/doc/json-enhancements.md) in SQLite core (as far as I can tell).
 
-The following file will query the database and output JSON:
+In order to programmatically get data out of SQLite, rather than interactively, one option is to execute some SQL from a file on disk. This file can also contain `sqlite3` commands intermixed with SQL statements which is useful for configuring the output mode (csv, json, etc.), the output destination (defaults to `stdout`), and which database to query.
+
+The following file will query the `database.sqlite` in the home directory and output JSON to a file named `blog_posts.json`:
 ```sql
 .mode json
-.output blog_posts.json
-.open database.sqlite
+.output ~/blog_posts.json
+.open ~/database.sqlite
 
 SELECT ...;
 ```
 
-We can invoke this query by “shoveling” the file into `sqlite3`:
+This query can be invoked by “shoveling” the file into `sqlite3`:
 
 ```bash
 $ sqlite3 < query.sql
 ```
 
-Or alternatively, using `stdin`:
+Or alternatively, using pipes (although [shellcheck](https://github.com/koalaman/shellcheck) indicates that this is a [useless cat](https://www.shellcheck.net/wiki/SC2002)):
 
 ```bash
 $ cat query.sql | sqlite3
@@ -130,10 +139,90 @@ $ cat query.sql | sqlite3
 If for some reason you’d prefer to keep the file as SQL only, you can accomplish the same thing using pipes and CLI arguments:
 
 ```bash
-$ cat query.sql | sqlite3 database.sqlite -cmd “.mode json” | blog_posts.json
+$ sqlite3 database.sqlite -cmd “.mode json” < query.sql > blog_posts.json
 ```
 
+## Building the Import Workflow
+Since the purpose of this workflow is to pull blog posts written in Bear into my Astro site, I’m going to keep the scripts in that repo starting with an executable script at `/scripts/import`:
+
+```bash label=./scripts/import
+#!/usr/bin/env bash
+
+set -e
+
+# create /tmp directory if it doesn't exist
+mkdir -p ./tmp
+
+# copy the database
+cp "$HOME/Library/Group Containers/9K33E3U3T4.net.shinyfrog.bear/Application Data/database.sqlite" ./tmp/bear.sqlite
+
+# query for posts and tags, convert JSON to markdown
+sqlite3 ./tmp/bear.sqlite -cmd ".mode json" < ./scripts/import-from-bear/query-posts-tags.sql | ts-node ./scripts/import-from-bear
+
+# clean up
+rm ./tmp/bear.sqlite
+```
+
+This script will:
+
+1. Set up a temporary directory
+2. Copy Bear’s database into that directory
+3. Execute the SQL to query tagged posts
+4. Feed the resulting JSON into a TS/Node script
+
+Next I’ll need to create `./scripts/import-from-bear/query-posts-tags.sql` and `./scripts/import-from-bear`. I’ve opted to do the rest of my scripting in [TypeScript](https://www.typescriptlang.org/) /[Node.js](https://nodejs.org/en/) for 2 reasons:
+
+1. I’m working with JSON data, so manipulating it will be pretty straightforward
+2. The rest of my Astro site is also written in TypeScript, and I want to share the schema type for Posts between the two
+
+To get that up and running I just needed to install [`ts-node`](https://typestrong.org/ts-node/) and `@types/node`. To give myself a bit of extra type safety I’m also going to pull in [`io-ts`](https://github.com/gcanti/io-ts) which is a runtime type-checking library and [`fp-ts`](https://github.com/gcanti/fp-ts) which is a general purpose functional programming library that I’ve been itching to play with.
+
+```bash
+$ npm i -D ts-node @types/node fp-ts io-ts
+```
+
+`io-ts` allows me to write out a schema for Posts that I can use to validate the data I’m pulling in from SQLite so that in case something changes I’ll get slightly better error messages and know where to look. It’s also super simple to have TypeScript infer the type of that schema for use elsewhere in the system.
+
+*Note*: I also had to add a `tsconfig.json` to my `./scripts/import-from-bear/` folder so that the TypeScript compiler (`tsc`) knows that the `.ts` file therein is a standalone node script (and to avoid `tsc` picking up the Astro-specific TypeScript configuration in the root `tsconfig.json`).
+
+```json label=./scripts/import-from-bear/tsconfig.json
+{
+  "extends": "ts-node/node16/tsconfig.json",
+  "ts-node": {
+    "transpileOnly": true,
+    "files": true,
+    "compilerOptions": {
+      "strict": true
+    }
+  }
+}
+```
+
+The SQL file at `./scripts/import-from-bear/query-posts-tags.sql` just contains the query we looked at above for pulling out Notes tagged with `#blog/solomonhawk`.
+
+While I’m getting stuff set up, I’ll also add a npm script `npm run import` in my `package.json` to fire off the import.
+
+```diff label=package.json
+{
+  ...
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro check && tsc && astro build",
+    "preview": "astro preview",
++    "import": "./scripts/import"
+  },
+	...
+}
+```
+
+### 
 ---
 
 ### References
 [SQLite3 CLI documentation](https://www.sqlite.org/cli.html)
+
+---
+### Notes
+* publish automatically or open a pull request? 1 PR per post?
+* watch bear database while running dev server?

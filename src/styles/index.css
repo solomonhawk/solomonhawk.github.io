@@ -105,8 +105,8 @@
 		@apply text-yellow-200 break-words;
 	}
 
-	.astro-code {
-		@apply p-2 md:p-4 rounded border-2 border-white/10;
+	.prose a code {
+		@apply text-inherit;
 	}
 
 	.blog-tags {
@@ -129,3 +129,12 @@
 		@apply text-lg p-2;
 	}
 }
+
+.astro-code {
+	@apply p-2 md:p-4 rounded border-2 border-white/10;
+}
+
+.code-block-label {
+	@apply inline-block font-mono text-sm text-white/60 bg-[#0d1117] border-white/10 border-l-2 border-t-2 border-r-2 p-2 md:px-4 rounded-t -mb-[2px];
+}
+
