@@ -23,7 +23,7 @@ export function parsePost(post: DBPost): O.Option<PostData> {
   const postData: PostData = {
     title: post.title,
     markdown: post.markdown,
-    publishDate: new Date(post.modifiedAt).toISOString(), // @TODO: fix this date
+    publishDate: postDate(post.modifiedAt),
     tags: filterBearTags(JSON.parse(post.tags) || [])
   };
 
@@ -34,6 +34,12 @@ export function parsePost(post: DBPost): O.Option<PostData> {
   console.log(`[!] Failed to parse "${post.title}" from JSON`);
 
   return O.none;
+}
+
+function postDate(date: number): string {
+  const d = new Date(date);
+  d.setHours(0, 0, 0, 0);
+  return d.toISOString();
 }
 
 function filterBearTags(tags: string[]): string[] {
@@ -77,7 +83,7 @@ function stripNoteTitle(markdown: string): string {
  * @returns string with Bear tags removed
  */
 function stripBearTags(markdown: string): string {
-  return markdown.replace(/\B#[\w\/]+\b/gm, '');
+  return markdown.replace(/(?<!`)\B#[\w\/]+\b/gm, '');
 }
 
 export function writePostAsMarkdown({filename, markdown}: { filename: string, markdown: string }): void {
