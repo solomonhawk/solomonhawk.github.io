@@ -34,13 +34,28 @@ const { title, description, permalink } = Astro.props;
 <meta property="twitter:description" content={description} />
 <meta property="twitter:image" />
 
-<!-- Fonts -->
+<!-- Fonts (https://pagespeedchecklist.com/asynchronous-google-fonts) -->
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link
+  rel="preload"
+  as="style"
+  href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz@6..96&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Share+Tech+Mono&display=swap"
+/>
+
+<link
   href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz@6..96&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Share+Tech+Mono&display=swap"
   rel="stylesheet"
+  media="print"
+  onload="this.onload=null;this.removeAttribute('media');"
 />
+
+<noscript>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz@6..96&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Share+Tech+Mono&display=swap"
+    rel="stylesheet"
+  />
+</noscript>
 
 <!-- Google tag (gtag.js) -->
 <script
