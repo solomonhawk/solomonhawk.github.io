@@ -17,7 +17,7 @@ const config: Config = {
   ],
   defaultLayout: '@layouts/BlogPost.astro',
   postsPath: 'src/pages/writing/posts',
-  assetsUrl: '/assets/images'
+  assetsUrl: '/assets/images/posts'
 }
 
 export default config;

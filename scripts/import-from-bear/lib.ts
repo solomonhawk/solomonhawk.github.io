@@ -73,15 +73,17 @@ function filterBearTags(tags: string[]): string[] {
 export function convertToMarkdown(post: PostData): { filename: string, markdown: string } {
   console.log(`> Converting "${post.title}" to MDX`);
 
+  const filename = slugger.slug(post.title);
+
   return {
-    filename: slugger.slug(post.title),
+    filename,
     markdown: `---
 layout: '${config.defaultLayout}'
 title: ${post.title}
 publishDate: ${post.publishDate}
 tags: [${post.tags?.join(', ')}]
 ---
-${pipe(post.markdown?.trim() || '', stripNoteTitle, stripBearTags, rewriteImageRefs).trim()}
+${pipe(post.markdown?.trim() || '', stripNoteTitle, stripBearTags, rewriteImageRefs(filename)).trim()}
 `};
 }
 
@@ -109,7 +111,7 @@ function stripBearTags(markdown: string): string {
 export function extractImageFilenames(imageFilenames: Set<string>) {
   return (post: { filename: string, markdown: string }) => {
     // matches the URL in a markdown image tag like `![alt text](<url>)`
-    const pattern = /!\[.*\]\((?<filename>[\w\/-]+\.\w+)\)/gm;
+    const pattern = /^!\[.*\]\((?<filename>[\w\/-]+\.\w+)\)$/gm;
     let result
 
     while((result = pattern.exec(post.markdown)) !== null) {
@@ -118,6 +120,8 @@ export function extractImageFilenames(imageFilenames: Set<string>) {
         continue;
       }
 
+      // convert the asset URL into an absolute path on disk
+      // e.g. /assets/images/2021-09-13/image.png => /Users/solomonhawk/Code/Personal/solomonhawk.github.io/public/assets/2021-09-13/image.png
       imageFilenames.add(path.join(process.cwd(), 'public', result.groups.filename));
     }
 
@@ -132,8 +136,10 @@ export function extractImageFilenames(imageFilenames: Set<string>) {
  * @param {string} markdown Markdown string with possible embedded image refs
  * @returns Markdown with image refs transformed to image tags
  */
-function rewriteImageRefs(markdown: string): string {
-  return markdown.replace(/\[image:.*\/([\w-]+)\.(\w+)\]$/gm, `![$1](${config.assetsUrl}/$1.$2)`);
+function rewriteImageRefs(filename: string): (markdown: string) => string {
+  return (markdown: string) =>{
+    return markdown.replace(/\[image:.*\/([\w-]+)\.(\w+)\]$/gm, `![$1](${path.join(config.assetsUrl, filename)}/$1.$2)`);
+  }
 }
 
 export function writePostAsMarkdown({filename, markdown}: { filename: string, markdown: string }): void {
@@ -161,8 +167,10 @@ export async function copyFilesToAssets(filenames: Set<string>): Promise<void> {
     }
 
     try {
+      // ensure the destination directory exists for this post before copying
+      await fs.promises.mkdir(fileInfos[entry].info.dir, { recursive: true });
       await fs.promises.copyFile(fileInfos[entry].path!, fileInfos[entry].filename)
-      console.log(`> Copied "${entry}" to "${config.assetsUrl}"`);
+      console.log(`> Copied "${entry}" to "${fileInfos[entry].info.dir}"`);
     } catch (err) {
       console.error(`[!] Failed to copy "${entry}" to assets`);
     }
