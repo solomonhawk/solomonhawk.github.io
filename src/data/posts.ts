@@ -1,11 +1,12 @@
 import { Post } from "../types/post";
 
 export function filterDrafts(posts: Post[]): Post[] {
-  if (import.meta.env.PROD) {
-    return posts.filter(post => !post.frontmatter.tags?.includes('draft'));
+  if (import.meta.env.SHOW_DRAFTS === "true") {
+    return posts;
   }
 
-  return posts;
+  return posts.filter(post => !post.frontmatter.tags?.includes('draft'));
+
 }
 
 export function sortPosts(posts: Post[]): Post[] {
