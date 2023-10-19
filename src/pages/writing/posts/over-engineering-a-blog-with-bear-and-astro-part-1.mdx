@@ -1,5 +1,5 @@
 ---
-layout: '@layouts/BlogPost.astro'
+layout: '@/layouts/BlogPost.astro'
 title: Over-engineering a Blog with Bear and Astro Part 1
 publishDate: 2023-10-18T04:00:00.000Z
 tags: [bear, sqlite, astro]
@@ -19,7 +19,7 @@ I’m new to Bear and haven’t built anything significant with Astro so I’ve 
 ## Working with Bear’s local data
 Bear’s [data is located](_https://bear.app/faq/Where%20are%20Bear%27s%20notes%20located/_) at: `~/Library/Group Containers/9K33E3U3T4.net.shinyfrog.bear/Application Data/database.sqlite` (I don’t think this is likely to change in the future, but just in case I’m currently using Bear Version 1.9.6 9044).
 
-> Bear recommends [copying the SQLite](https://bear.app/faq/Where%20are%20Bear%27s%20notes%20located/#:~:text=on%20Bear%E2%80%99s%20database%2C-,create%20a%20copy%20first,-to%20avoid%20problems) database to avoid corrupting Bear’s data. 
+> Bear recommends [copying the SQLite](https://bear.app/faq/Where%20are%20Bear%27s%20notes%20located/#:~:text=on%20Bear%E2%80%99s%20database%2C-,create%20a%20copy%20first,-to%20avoid%20problems) database to avoid corrupting Bear’s data.
 
 To be extra careful, I’ll do this temporarily as part of the query/publish workflow. In general, it should be safe to read data from the original, if you want to take that approach.
 
@@ -42,55 +42,55 @@ sqlite>
 To get a sense for how Bear structures things, I start with examining the full database schema by entering `.schema`. This will output a whole bunch of SQL `CREATE` statements. The main ones I’m interested in are the `ZSFNOTE` table which contains the Note data, the `ZSFNOTETAG` table which contains the Tags data, and the `Z_7TAGS` table which joins Notes and Tags in a many-to-many relationship (the following is a subset of the full schema, formatted to make it a bit easier to read):
 
 ```sql
-CREATE TABLE ZSFNOTE ( 
-	Z_PK INTEGER PRIMARY KEY, 
-	Z_ENT INTEGER, 
-	Z_OPT INTEGER, 
-	ZARCHIVED INTEGER, 
-	ZENCRYPTED INTEGER, 
-	ZHASFILES INTEGER, 
-	ZHASIMAGES INTEGER, 
-	ZHASSOURCECODE INTEGER, 
-	ZLOCKED INTEGER, 
-	ZORDER INTEGER, 
-	ZPERMANENTLYDELETED INTEGER, 
-	ZPINNED INTEGER, 
-	ZSHOWNINTODAYWIDGET INTEGER, 
-	ZSKIPSYNC INTEGER, 
-	ZTODOCOMPLETED INTEGER, 
-	ZTODOINCOMPLETED INTEGER, 
-	ZTRASHED INTEGER, 
-	ZFOLDER INTEGER, 
-	ZPASSWORD INTEGER, 
-	ZSERVERDATA INTEGER, 
-	ZARCHIVEDDATE TIMESTAMP, 
-	ZCONFLICTUNIQUEIDENTIFIERDATE TIMESTAMP, 
-	ZCREATIONDATE TIMESTAMP, 
-	ZLOCKEDDATE TIMESTAMP, 
-	ZMODIFICATIONDATE TIMESTAMP, 
-	ZORDERDATE TIMESTAMP, 
-	ZPINNEDDATE TIMESTAMP, 
-	ZTRASHEDDATE TIMESTAMP, 
-	ZCONFLICTUNIQUEIDENTIFIER VARCHAR, 
-	ZENCRYPTIONUNIQUEIDENTIFIER VARCHAR, 
-	ZLASTEDITINGDEVICE VARCHAR, 
-	ZSUBTITLE VARCHAR, 
-	ZTEXT VARCHAR, 
-	ZTITLE VARCHAR, 
-	ZUNIQUEIDENTIFIER VARCHAR, 
-	ZENCRYPTEDDATA BLOB, 
+CREATE TABLE ZSFNOTE (
+	Z_PK INTEGER PRIMARY KEY,
+	Z_ENT INTEGER,
+	Z_OPT INTEGER,
+	ZARCHIVED INTEGER,
+	ZENCRYPTED INTEGER,
+	ZHASFILES INTEGER,
+	ZHASIMAGES INTEGER,
+	ZHASSOURCECODE INTEGER,
+	ZLOCKED INTEGER,
+	ZORDER INTEGER,
+	ZPERMANENTLYDELETED INTEGER,
+	ZPINNED INTEGER,
+	ZSHOWNINTODAYWIDGET INTEGER,
+	ZSKIPSYNC INTEGER,
+	ZTODOCOMPLETED INTEGER,
+	ZTODOINCOMPLETED INTEGER,
+	ZTRASHED INTEGER,
+	ZFOLDER INTEGER,
+	ZPASSWORD INTEGER,
+	ZSERVERDATA INTEGER,
+	ZARCHIVEDDATE TIMESTAMP,
+	ZCONFLICTUNIQUEIDENTIFIERDATE TIMESTAMP,
+	ZCREATIONDATE TIMESTAMP,
+	ZLOCKEDDATE TIMESTAMP,
+	ZMODIFICATIONDATE TIMESTAMP,
+	ZORDERDATE TIMESTAMP,
+	ZPINNEDDATE TIMESTAMP,
+	ZTRASHEDDATE TIMESTAMP,
+	ZCONFLICTUNIQUEIDENTIFIER VARCHAR,
+	ZENCRYPTIONUNIQUEIDENTIFIER VARCHAR,
+	ZLASTEDITINGDEVICE VARCHAR,
+	ZSUBTITLE VARCHAR,
+	ZTEXT VARCHAR,
+	ZTITLE VARCHAR,
+	ZUNIQUEIDENTIFIER VARCHAR,
+	ZENCRYPTEDDATA BLOB,
 	ZVECTORCLOCK BLOB
 );
-CREATE TABLE Z_7TAGS ( 
-	Z_7NOTES INTEGER, 
-	Z_14TAGS INTEGER, 
+CREATE TABLE Z_7TAGS (
+	Z_7NOTES INTEGER,
+	Z_14TAGS INTEGER,
 	PRIMARY KEY (Z_7NOTES, Z_14TAGS)
 );
-CREATE TABLE ZSFNOTETAG ( 
-	Z_PK INTEGER PRIMARY KEY, 
-	Z_ENT INTEGER, 
-	Z_OPT INTEGER, 
-	ZMODIFICATIONDATE TIMESTAMP, 
+CREATE TABLE ZSFNOTETAG (
+	Z_PK INTEGER PRIMARY KEY,
+	Z_ENT INTEGER,
+	Z_OPT INTEGER,
+	ZMODIFICATIONDATE TIMESTAMP,
 	ZTITLE VARCHAR
 );
 ```
