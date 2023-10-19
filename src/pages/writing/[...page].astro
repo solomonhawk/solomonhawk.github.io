@@ -1,15 +1,15 @@
 ---
-import type { GetStaticPathsOptions } from "astro";
-import type { Post } from "../../types/post";
+import type { GetStaticPathsOptions } from 'astro';
 
-import PageLayout from "../../layouts/Page.astro";
-import BlogPostPreview from "../../components/BlogPostPreview.astro";
-import { filterDrafts, sortPosts } from "../../data/posts";
-import BlogPagination from "../../components/BlogPagination.astro";
-import { groupTagsByCount } from "@data/tags";
+import BlogPagination from '@/components/BlogPagination.astro';
+import BlogPostPreview from '@/components/BlogPostPreview.astro';
+import { filterDrafts, sortPosts } from '@/data/posts';
+import { groupTagsByCount } from '@/data/tags';
+import PageLayout from '@/layouts/Page.astro';
+import type { Post } from '@/types/post';
 
-export const posts = filterDrafts(sortPosts(await Astro.glob("./posts/*.mdx")));
-const tags = groupTagsByCount(posts)
+export const posts = filterDrafts(sortPosts(await Astro.glob('./posts/*.mdx')));
+const tags = groupTagsByCount(posts);
 
 export async function getStaticPaths({ paginate }: GetStaticPathsOptions) {
   return paginate(posts, { pageSize: 10 });
@@ -17,8 +17,8 @@ export async function getStaticPaths({ paginate }: GetStaticPathsOptions) {
 
 const { page } = Astro.props;
 
-let title = "Solomon Hawk - Writing";
-let description = "Selected writing from the depths of the mind of Solomon.";
+let title = 'Solomon Hawk - Writing';
+let description = 'Selected writing from the depths of the mind of Solomon.';
 let permalink = new URL(Astro.url.pathname, Astro.site);
 ---
 
@@ -27,8 +27,9 @@ let permalink = new URL(Astro.url.pathname, Astro.site);
     <h2 class="h1 mb-heading-lg md:mb-heading-xl">
       <span class="sr-only">Writing Page {page.currentPage}</span>
       <span aria-hidden="true">
-        <span class="text-green-500">.</span><span class="text-gray-500">0x</span
-          >WR171N6{page.currentPage > 1 ? `/${page.currentPage}` : ""}
+        <span class="text-green-500">.</span><span class="text-gray-500"
+          >0x</span
+        >WR171N6{page.currentPage > 1 ? `/${page.currentPage}` : ''}
       </span>
     </h2>
 
@@ -39,19 +40,26 @@ let permalink = new URL(Astro.url.pathname, Astro.site);
     <BlogPagination url={page.url} />
   </section>
 
-  {tags.length > 0 && (
-    <section class="mt-8 md:ml-4 md:text-right" slot="sidebar">
-      <h2 class="h3 mb-heading-lg md:mb-heading-xl">Tags</h2>
+  {
+    tags.length > 0 && (
+      <section class="mt-8 md:ml-4 md:text-right" slot="sidebar">
+        <h2 class="h3 mb-heading-lg md:mb-heading-xl">Tags</h2>
 
-      <ul class="blog-tags flex-col text-sm font-mono">
-        {
-          tags.map((t) => (
+        <ul class="blog-tags flex-col font-mono text-sm">
+          {tags.map((t) => (
             <li>
-              <a class="blog-tag" rel="prefetch" href={`/writing/tags/${t.tag}`}>{t.tag}{t.count > 1 ? `${String.fromCharCode(160)}(${t.count})` : ''}</a> <!-- prettier-ignore -->
+              <a
+                class="blog-tag"
+                rel="prefetch"
+                href={`/writing/tags/${t.tag}`}
+              >
+                {t.tag}
+                {t.count > 1 ? `${String.fromCharCode(160)}(${t.count})` : ''}
+              </a>
             </li>
-          ))
-        }
-      </ul>
-    </section>
-  )}
+          ))}
+        </ul>
+      </section>
+    )
+  }
 </PageLayout>

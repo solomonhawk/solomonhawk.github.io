@@ -1,12 +1,12 @@
 ---
-import PageHeader from "../components/PageHeader.astro";
-import BaseHead from "../components/BaseHead.astro";
+import BaseHead from '../components/BaseHead.astro';
+import PageHeader from '../components/PageHeader.astro';
 
 const { content } = Astro.props;
 const { title, description, permalink } = content;
 ---
 
-<html lang={content.lang || "en"}>
+<html lang={content.lang || 'en'}>
   <head>
     <BaseHead {title} {description} {permalink} />
   </head>
@@ -14,13 +14,13 @@ const { title, description, permalink } = content;
   <body>
     <PageHeader />
 
-    <main id="content" class="container mx-auto max-w-3xl px-4 my-4">
-      <div class="flex flex-col md:flex-row mt-8 sm:mt-12 md:mt-16">
+    <main id="content" class="container mx-auto my-4 max-w-3xl px-4">
+      <div class="mt-8 flex flex-col sm:mt-12 md:mt-16 md:flex-row">
         <div class="grow">
           <slot name="main" />
         </div>
 
-        <div class="md:max-w-[200px] no-shrink">
+        <div class="no-shrink md:max-w-[200px]">
           <slot name="sidebar" />
         </div>
       </div>

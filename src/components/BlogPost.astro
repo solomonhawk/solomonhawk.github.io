@@ -25,12 +25,12 @@ const { title, publishDate, heroImage, alt, tags } = Astro.props;
       )
     }
 
-    <p class="font-mono text-gray-400 mb-1 sm:mb-2">
+    <p class="mb-1 font-mono text-gray-400 sm:mb-2">
       {
-        new Date(publishDate).toLocaleDateString("en-US", {
-          month: "long",
-          day: "numeric",
-          year: "numeric",
+        new Date(publishDate).toLocaleDateString('en-US', {
+          month: 'long',
+          day: 'numeric',
+          year: 'numeric',
         })
       }
     </p>
@@ -42,7 +42,7 @@ const { title, publishDate, heroImage, alt, tags } = Astro.props;
         <div class="blog-tags my-4 md:my-6">
           {tags.map(
             (tag) =>
-            <a class="blog-tag" rel="prefetch" href={`/writing/tags/${tag}`}>{tag}</a> // prettier-ignore
+            <a class="blog-tag" rel="prefetch" href={`/writing/tags/${tag}`}>{tag}</a>, // prettier-ignore
           )}
         </div>
       ) : null

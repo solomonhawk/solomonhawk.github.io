@@ -1,13 +1,15 @@
 ---
-import PageLayout from "@layouts/Page.astro";
-import { filterDrafts, sortPosts } from "@data/posts";
-import { groupTagsByCount } from "@data/tags";
+import { filterDrafts, sortPosts } from '@/data/posts';
+import { groupTagsByCount } from '@/data/tags';
+import PageLayout from '@/layouts/Page.astro';
 
-export const posts = filterDrafts(sortPosts(await Astro.glob("../posts/*.mdx")));
+export const posts = filterDrafts(
+  sortPosts(await Astro.glob('../posts/*.mdx')),
+);
 const tags = groupTagsByCount(posts);
 
-let title = "Solomon Hawk - Writing Tags";
-let description = "Selected writing from the depths of the mind of Solomon.";
+let title = 'Solomon Hawk - Writing Tags';
+let description = 'Selected writing from the depths of the mind of Solomon.';
 let permalink = new URL(Astro.url.pathname, Astro.site);
 ---
 
@@ -16,7 +18,8 @@ let permalink = new URL(Astro.url.pathname, Astro.site);
     <h2 class="h1 mb-heading-lg md:mb-heading-xl">
       <span class="sr-only">Writing Tags</span>
       <span aria-hidden="true">
-        <span class="text-green-500">.</span><span class="text-gray-500">0x</span
+        <span class="text-green-500">.</span><span class="text-gray-500"
+          >0x</span
         >WR171N6/T465
       </span>
     </h2>
@@ -24,13 +27,18 @@ let permalink = new URL(Astro.url.pathname, Astro.site);
     <div class="space-y-8 md:space-y-12">
       <ul class="blog-tags blog-tags-lg">
         {
-          tags.map(
-            (t) => (
-              <li>
-                <a class="blog-tag" rel="prefetch" href={`/writing/tags/${t.tag}`}>{t.tag}{t.count > 1 ? `${String.fromCharCode(160)}(${t.count})` : ''}</a> <!-- prettier-ignore -->
-              </li>
-            )
-          )
+          tags.map((t) => (
+            <li>
+              <a
+                class="blog-tag"
+                rel="prefetch"
+                href={`/writing/tags/${t.tag}`}
+              >
+                {t.tag}
+                {t.count > 1 ? `${String.fromCharCode(160)}(${t.count})` : ''}
+              </a>
+            </li>
+          ))
         }
       </ul>
     </div>
