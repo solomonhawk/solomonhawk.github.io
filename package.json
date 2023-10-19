@@ -9,8 +9,8 @@
     "preview": "astro preview",
     "import": "scripts/import",
     "format": "prettier --write .",
-    "lint": "eslint --fix . --max-warnings 0 --ext .astro,.ts,.tsx",
-    "lint:ci": "eslint . --max-warnings 0 --ext .astro,.ts,.tsx"
+    "lint": "eslint --fix . --max-warnings 0 --ext .astro,.ts,.tsx,*.js,*.cjs,*.mjs",
+    "lint:ci": "eslint . --max-warnings 0 --ext .astro,.ts,.tsx,*.js,*.cjs,*.mjs"
   },
   "devDependencies": {
     "@astrojs/mdx": "^0.10.3",
