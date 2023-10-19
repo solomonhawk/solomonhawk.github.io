@@ -14,4 +14,4 @@ DBSIZE=$(stat -f %z "$TMPFILE" | numfmt --to=iec)
 echo "Bear database copied to $TMPFILE ($DBSIZE)"
 
 # query for posts and tags, convert JSON to markdown
-sqlite3 "$TMPFILE" -cmd ".mode json" < ./scripts/import-from-bear/query-posts-tags.sql | "$(npm bin)"/ts-node ./scripts/import-from-bear
+sqlite3 "$TMPFILE" -cmd ".mode json" < ./scripts/import-from-bear/query-posts-tags.sql | ./node_modules/.bin/ts-node ./scripts/import-from-bear
