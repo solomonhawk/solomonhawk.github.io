@@ -1,8 +1,8 @@
 ---
 import type { GetStaticPathsOptions } from 'astro';
 
-import BlogPagination from '@/components/BlogPagination.astro';
-import BlogPostPreview from '@/components/BlogPostPreview.astro';
+import Pagination from '@/components/Pagination.astro';
+import PostPreview from '@/components/PostPreview.astro';
 import { filterDrafts, sortPosts } from '@/data/posts';
 import { groupTagsByCount } from '@/data/tags';
 import PageLayout from '@/layouts/Page.astro';
@@ -34,10 +34,10 @@ let permalink = new URL(Astro.url.pathname, Astro.site);
     </h2>
 
     <div class="space-y-8 md:space-y-12">
-      {page.data.map((p: Post) => <BlogPostPreview post={p} />)}
+      {page.data.map((p: Post) => <PostPreview post={p} />)}
     </div>
 
-    <BlogPagination url={page.url} />
+    <Pagination url={page.url} />
   </section>
 
   {
@@ -46,18 +46,18 @@ let permalink = new URL(Astro.url.pathname, Astro.site);
         <h2 class="h3 mb-heading-lg md:mb-heading-xl">Tags</h2>
 
         <ul class="blog-tags flex-col font-mono text-sm">
-          {tags.map((t) => (
-            <li>
-              <a
-                class="blog-tag"
-                rel="prefetch"
-                href={`/writing/tags/${t.tag}`}
-              >
-                {t.tag}
-                {t.count > 1 ? `${String.fromCharCode(160)}(${t.count})` : ''}
-              </a>
-            </li>
-          ))}
+          {tags.map((t) => {
+            const tagLabel = `${t.tag}${
+              t.count > 1 ? `${String.fromCharCode(160)}(${t.count})` : ''
+            }`;
+
+            return (
+              <li>
+                {/* prettier-ignore */}
+                <a class="blog-tag whitespace-nowrap" rel="prefetch" href={`/writing/tags/${t.tag}`}>{tagLabel}</a>
+              </li>
+            );
+          })}
         </ul>
       </section>
     )

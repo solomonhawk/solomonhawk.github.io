@@ -1,8 +1,8 @@
 ---
 import type { GetStaticPathsOptions } from 'astro';
 
-import BlogPagination from '@/components/BlogPagination.astro';
-import BlogPostPreview from '@/components/BlogPostPreview.astro';
+import Pagination from '@/components/Pagination.astro';
+import PostPreview from '@/components/PostPreview.astro';
 import { filterDrafts, sortPosts } from '@/data/posts';
 import { groupTagsByCount } from '@/data/tags';
 import PageLayout from '@/layouts/Page.astro';
@@ -48,9 +48,9 @@ let permalink = new URL(Astro.url.pathname, Astro.site);
     </h2>
 
     <div class="space-y-8 md:space-y-12">
-      {page.data.map((post: Post) => <BlogPostPreview post={post} />)}
+      {page.data.map((post: Post) => <PostPreview post={post} />)}
     </div>
 
-    <BlogPagination url={page.url} />
+    <Pagination url={page.url} />
   </section>
 </PageLayout>
