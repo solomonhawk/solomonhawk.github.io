@@ -1,13 +1,14 @@
-import { pipe } from "fp-ts/lib/function";
-import * as ra from "fp-ts/ReadonlyArray";
+import { pipe } from 'fp-ts/lib/function';
+import * as ra from 'fp-ts/ReadonlyArray';
+
 import {
-  readJSONFromStdIn,
-  parsePost,
   convertToMarkdown,
-  extractImageFilenames,
-  writePostAsMarkdown,
   copyFilesToAssets,
-} from "./lib";
+  extractImageFilenames,
+  parsePost,
+  readJSONFromStdIn,
+  writePostAsMarkdown,
+} from './lib';
 
 async function main() {
   const imageFilenames = new Set<string>();
@@ -17,12 +18,12 @@ async function main() {
     ra.filterMap(parsePost),
     ra.map(convertToMarkdown),
     ra.map(extractImageFilenames(imageFilenames)),
-    ra.map(writePostAsMarkdown)
+    ra.map(writePostAsMarkdown),
   );
 
   await copyFilesToAssets(imageFilenames);
 
-  console.log("> Finished processing JSON.");
+  console.log('> Finished processing JSON.');
 }
 
 main();

@@ -1,6 +1,7 @@
 name: Github Pages Astro CI
 
 on:
+  pull_request:
   push:
     branches: [ main ]
   workflow_dispatch:
@@ -12,11 +13,31 @@ permissions:
   id-token: write
 
 jobs:
-  build:
+  lint-format:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout your repository using git
         uses: actions/checkout@v2
+
+      - name: Install node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: 'npm'
+
+      - name: Install NPM dependencies
+        run: npm ci
+
+      - name: Lint and format
+        run: npm run lint:ci
+
+  build:
+    needs: lint-format
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout your repository using git
+        uses: actions/checkout@v2
+
       - name: Install, build, and upload your site
         uses: withastro/action@v0
 

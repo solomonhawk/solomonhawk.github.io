@@ -1,13 +1,24 @@
-import {useState} from 'react';
+import { useState } from 'react';
 
-export default function Counter({ initialValue }: { initialValue?: number}) {
+export default function Counter({ initialValue }: { initialValue?: number }) {
   const [count, setCount] = useState(initialValue || 0);
 
   return (
-    <div className="flex items-center font-mono gap-1">
-      <span className="text-xl mr-2">{count}</span>
-      <button className="text-sm p-1 bg-green-500 text-black leading-none rounded" onClick={() => setCount(count + 1)}>+</button>
-      <button className="text-sm p-1 bg-green-500 disabled:bg-green-500/50 text-black leading-none rounded" disabled={count <= 0} onClick={() => setCount(Math.max(0, count - 1))}>-</button>
+    <div className="flex items-center gap-1 font-mono">
+      <span className="mr-2 text-xl">{count}</span>
+      <button
+        className="rounded bg-green-500 p-1 text-sm leading-none text-black"
+        onClick={() => setCount(count + 1)}
+      >
+        +
+      </button>
+      <button
+        className="rounded bg-green-500 p-1 text-sm leading-none text-black disabled:bg-green-500/50"
+        disabled={count <= 0}
+        onClick={() => setCount(Math.max(0, count - 1))}
+      >
+        -
+      </button>
     </div>
-  )
+  );
 }

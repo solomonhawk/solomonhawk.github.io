@@ -1,5 +1,4 @@
-import type { MarkdownInstance, MDXInstance } from 'astro'
-
+import type { MarkdownInstance, MDXInstance } from 'astro';
 import * as t from 'io-ts';
 
 const PostSchemaRequired = t.type({
@@ -13,7 +12,10 @@ const PostSchemaOptional = t.partial({
   markdown: t.string,
 });
 
-export const PostSchema = t.intersection([PostSchemaRequired, PostSchemaOptional]);
+export const PostSchema = t.intersection([
+  PostSchemaRequired,
+  PostSchemaOptional,
+]);
 
 export type PostData = t.TypeOf<typeof PostSchema>;
 
