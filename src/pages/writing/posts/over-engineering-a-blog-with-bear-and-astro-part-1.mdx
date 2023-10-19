@@ -4,7 +4,7 @@ title: Over-engineering a Blog with Bear and Astro Part 1
 publishDate: 2023-10-18T04:00:00.000Z
 tags: [bear, sqlite, astro]
 ---
-I use [Bear](_https://bear.app/_) to take notes and [Astro](_https://astro.build/_) to publish my blog. In fact I’m writing this in Bear right now as I figure out how to create a workflow that allows me to promote a note in Bear into a blog post that will appear on my site which is built with Astro.
+I use [Bear](https://bear.app/) to take notes and [Astro](https://astro.build/) to publish my blog. In fact I’m writing this in Bear right now as I figure out how to create a workflow that allows me to promote a note in Bear into a blog post that will appear on my site which is built with Astro.
 
 *Note*: I’m not going to cover setting up an Astro project with automated publishing in CI but that’s ultimately where I want to get to.
 
@@ -17,9 +17,9 @@ I’m new to Bear and haven’t built anything significant with Astro so I’ve 
 4. Automatically commit those changes to git, create and push a commit
 
 ## Working with Bear’s local data
-Bear’s [data is located](_https://bear.app/faq/Where%20are%20Bear%27s%20notes%20located/_) at: `~/Library/Group Containers/9K33E3U3T4.net.shinyfrog.bear/Application Data/database.sqlite` (I don’t think this is likely to change in the future, but just in case I’m currently using Bear Version 1.9.6 9044).
+Bear’s [data is located](https://bear.app/faq/where-are-bears-notes-located/) at: `~/Library/Group Containers/9K33E3U3T4.net.shinyfrog.bear/Application Data/database.sqlite` (I don’t think this is likely to change in the future, but just in case I’m currently using Bear Version 1.9.6 9044).
 
-> Bear recommends [copying the SQLite](https://bear.app/faq/Where%20are%20Bear%27s%20notes%20located/#:~:text=on%20Bear%E2%80%99s%20database%2C-,create%20a%20copy%20first,-to%20avoid%20problems) database to avoid corrupting Bear’s data.
+> Bear recommends copying the SQLite database to avoid corrupting Bear’s data.
 
 To be extra careful, I’ll do this temporarily as part of the query/publish workflow. In general, it should be safe to read data from the original, if you want to take that approach.
 
