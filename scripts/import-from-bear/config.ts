@@ -11,7 +11,7 @@ const config: Config = {
   // XXX: this isn't great - is there a better way to find files that were
   // embedded in a bear post?
   imageSearchPaths: ['~/Downloads', '~/Documents', '~/Pictures'],
-  defaultLayout: '@/layouts/BlogPost.astro',
+  defaultLayout: '@/layouts/PostLayout.astro',
   postsPath: 'src/pages/writing/posts',
   assetsUrl: '/assets/images/posts',
 };
