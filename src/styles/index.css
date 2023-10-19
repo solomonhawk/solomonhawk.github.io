@@ -5,17 +5,6 @@
 @layer base {
   :root {
     --user-font-scale: 1rem - 16px;
-    --astro-code-color-text: #c9d1d9;
-    --astro-code-color-background: #0d1117;
-    --astro-code-token-constant: #79b8ff;
-    --astro-code-token-string: #9ecbff;
-    --astro-code-token-comment: #6a737d;
-    --astro-code-token-keyword: #f97583;
-    --astro-code-token-parameter: #e1e4e8;
-    --astro-code-token-function: #e1e4e8;
-    --astro-code-token-string-expression: #79b8ff;
-    --astro-code-token-punctuation: #ffab70;
-    --astro-code-token-link: honeydew;
   }
 
   body {
@@ -179,7 +168,7 @@
 }
 
 .astro-code {
-  @apply rounded border-2 border-white/10 !bg-code p-2 md:p-4;
+  @apply !bg-code rounded border-2 border-white/10 p-2 md:p-4;
 }
 
 .code-block-label {
