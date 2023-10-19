@@ -1,9 +1,9 @@
-import { Post } from '../types/post';
+import type { CollectionEntry } from 'astro:content';
 
-export const groupTagsByCount = (posts: Post[]) => {
+export const groupTagsByCount = (posts: CollectionEntry<'posts'>[]) => {
   const tagsByCount = posts.reduce(
     (t, post) => {
-      for (const tag of post.frontmatter.tags || []) {
+      for (const tag of post.data.tags || []) {
         t[tag] = (t[tag] || 0) + 1;
       }
 

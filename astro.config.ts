@@ -19,9 +19,7 @@ export default defineConfig({
     prefetch(),
     sitemap(),
     tailwind({
-      config: {
-        applyBaseStyles: false,
-      },
+      applyBaseStyles: false,
     }),
     partytown({
       config: {

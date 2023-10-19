@@ -1,28 +1,30 @@
 ---
-import type { GetStaticPathsOptions } from 'astro';
+import type { GetStaticPaths, InferGetStaticPropsType } from 'astro';
+import { getCollection } from 'astro:content';
 
 import Pagination from '@/components/Pagination.astro';
 import PostPreview from '@/components/PostPreview.astro';
 import { filterDrafts, sortPosts } from '@/data/posts';
 import { groupTagsByCount } from '@/data/tags';
 import PageLayout from '@/layouts/Page.astro';
-import type { Post } from '@/types/post';
 
-export const posts = filterDrafts(sortPosts(await Astro.glob('./posts/*.mdx')));
-const tags = groupTagsByCount(posts);
+export const posts = await getCollection('posts');
+export const filteredPosts = filterDrafts(sortPosts(posts));
+export const tags = groupTagsByCount(filteredPosts);
 
-export async function getStaticPaths({ paginate }: GetStaticPathsOptions) {
-  return paginate(posts, { pageSize: 10 });
-}
+export const getStaticPaths = (async ({ paginate }) => {
+  return paginate(filteredPosts, { pageSize: 10 });
+}) satisfies GetStaticPaths;
 
-const { page } = Astro.props;
+type Props = InferGetStaticPropsType<typeof getStaticPaths>;
+
+const { page } = Astro.props as Props;
 
 let title = 'Solomon Hawk - Writing';
 let description = 'Selected writing from the depths of the mind of Solomon.';
-let permalink = new URL(Astro.url.pathname, Astro.site);
 ---
 
-<PageLayout content={{ title, description, permalink }}>
+<PageLayout content={{ title, description }}>
   <section slot="main">
     <h2 class="h1 mb-heading-lg md:mb-heading-xl">
       <span class="sr-only">Writing Page {page.currentPage}</span>
@@ -34,7 +36,7 @@ let permalink = new URL(Astro.url.pathname, Astro.site);
     </h2>
 
     <div class="space-y-8 md:space-y-12">
-      {page.data.map((p: Post) => <PostPreview post={p} />)}
+      {page.data.map((p) => <PostPreview post={p} />)}
     </div>
 
     <Pagination url={page.url} />

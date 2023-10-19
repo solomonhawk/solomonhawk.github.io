@@ -1,9 +1,7 @@
 ---
+import type { Page } from 'astro';
 export interface Props {
-  url: {
-    prev?: string;
-    next?: string;
-  };
+  url: Page['url'];
 }
 
 const { url } = Astro.props;
