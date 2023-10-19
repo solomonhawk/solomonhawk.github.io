@@ -1,8 +1,8 @@
 ---
 layout: '@layouts/BlogPost.astro'
-title: Automating a Blog Publishing Workflow with Bear and Astro
-publishDate: 2022-09-07T04:00:00.000Z
-tags: [draft, sqlite, bear, astro]
+title: Over-engineering a Blog with Bear and Astro Part 1
+publishDate: 2023-10-18T04:00:00.000Z
+tags: [bear, sqlite, astro]
 ---
 I use [Bear](_https://bear.app/_) to take notes and [Astro](_https://astro.build/_) to publish my blog. In fact I’m writing this in Bear right now as I figure out how to create a workflow that allows me to promote a note in Bear into a blog post that will appear on my site which is built with Astro.
 
@@ -39,7 +39,7 @@ sqlite>
 ```
 
 ## Bear’s Database Schema
-To get a sense for how Bear structures things, I’m examining the full database schema by entering `.schema`. This will output a whole bunch of SQL `CREATE` statements. The main ones I’mm interested in are the `ZSFNOTE` table which contains the Note data, the `ZSFNOTETAG` table which contains the Tags data, and the `Z_7TAGS` table which joins Notes and Tags in a many-to-many relationship (the following is a subset of the full schema, formatted to make it a bit easier to read):
+To get a sense for how Bear structures things, I start with examining the full database schema by entering `.schema`. This will output a whole bunch of SQL `CREATE` statements. The main ones I’m interested in are the `ZSFNOTE` table which contains the Note data, the `ZSFNOTETAG` table which contains the Tags data, and the `Z_7TAGS` table which joins Notes and Tags in a many-to-many relationship (the following is a subset of the full schema, formatted to make it a bit easier to read):
 
 ```sql
 CREATE TABLE ZSFNOTE ( 
@@ -107,7 +107,7 @@ SELECT n.ZTITLE as title, n.ZTEXT as markdown, datetime(n.ZMODIFICATIONDATE, 'un
   HAVING tags LIKE ‘%blog/solomonhawk%’;
 ```
 
-Here I’m querying for Notes that are tagged with `#blog/solomonhawk`. This is going to be dependent on how you choose to structure your Note Tags in Bear.
+Here I’m querying for Notes that are tagged with `#blog/solomonhawk`. This is based on how I chose to structure my Note Tags in Bear.
 
 *Note*: I had some trouble formatting the timestamp values Bear stores for `z.MODIFICATIONDATE`. Eventually I found a way to get the result I was looking for by using SQLite’s [datetime](http://www.sqlite.org/matrix/lang_datefunc.html#R-64048-35950-52196-42061-52178-11098-48520-29989) function to format the date as a `"unixepoch"`and adding 31 years. `¯\_(ツ)_/¯`
 
@@ -116,7 +116,7 @@ I’m also using `json_group_array` to concatenate tags into an array of strings
 In order to programmatically get data out of SQLite, rather than interactively, one option is to execute some SQL from a file on disk. This file can also contain `sqlite3` commands intermixed with SQL statements which is useful for configuring the output mode (csv, json, etc.), the output destination (defaults to `stdout`), and which database to query.
 
 The following file will query the `database.sqlite` in the home directory and output JSON to a file named `blog_posts.json`:
-```sql
+```sql label=query.sql
 .mode json
 .output ~/blog_posts.json
 .open ~/database.sqlite
@@ -150,24 +150,24 @@ Since the purpose of this workflow is to pull blog posts written in Bear into my
 
 set -e
 
-# create /tmp directory if it doesn't exist
-mkdir -p ./tmp
+cd "$(dirname "$0")/.."
+
+# create temporary directory
+TMPFOLDER=$(mktemp -d)
+TMPFILE="$TMPFOLDER/bear-database.sqlite"
 
 # copy the database
-cp "$HOME/Library/Group Containers/9K33E3U3T4.net.shinyfrog.bear/Application Data/database.sqlite" ./tmp/bear.sqlite
+cp "$HOME/Library/Group Containers/9K33E3U3T4.net.shinyfrog.bear/Application Data/database.sqlite" "$TMPFILE"
 
 # query for posts and tags, convert JSON to markdown
-sqlite3 ./tmp/bear.sqlite -cmd ".mode json" < ./scripts/import-from-bear/query-posts-tags.sql | ts-node ./scripts/import-from-bear
-
-# clean up
-rm ./tmp/bear.sqlite
+sqlite3 "$TMPFILE" -cmd ".mode json" < ./scripts/import-from-bear/query-posts-tags.sql | ts-node ./scripts/import-from-bear
 ```
 
 This script will:
 
 1. Set up a temporary directory
 2. Copy Bear’s database into that directory
-3. Execute the SQL to query tagged posts
+3. Execute the SQL to query tagged posts and emit them as JSON
 4. Feed the resulting JSON into a TS/Node script
 
 Next I’ll need to create `./scripts/import-from-bear/query-posts-tags.sql` and `./scripts/import-from-bear`. I’ve opted to do the rest of my scripting in [TypeScript](https://www.typescriptlang.org/) /[Node.js](https://nodejs.org/en/) for 2 reasons:
@@ -212,26 +212,16 @@ While I’m getting stuff set up, I’ll also add a npm script `npm run import` 
     "preview": "astro preview",
 +    "import": "./scripts/import"
   },
-	...
+  ...
 }
 ```
 
-@TODO:
-* ts-node script, transform JSON to markdown with yaml frontmatter
-	* `./scripts/import-from-bear/index.ts`
-	* `./scripts/import-from-bear/lib`
-* itworks.jpg (see what can be done about handling images)
-* modifying the imported markdown
-	* adding labels to code blocks
-* automatically importing while dev server is running
-	* file-system watching
+That’s as far as I’ve taken this for now and there’s still a lot of fun things left to figure out. Notably:
+- Automating the publish flow with a GitHub workflow
+- Handling embedded media (like images) from blog Notes
+- Adding additional functionality to the markdown parser, like labels for code blocks
+- Watching for changes and re-running the import in dev mode
 
 ---
 
-### References
-[SQLite3 CLI documentation](https://www.sqlite.org/cli.html)
-
----
-### Notes
-* publish automatically or open a pull request? 1 PR per post?
-* watch bear database while running dev server?
+More on that to come. If you made it this far, thanks for sticking around! I hope you learned something along with me. :)

@@ -111,7 +111,7 @@ function stripBearTags(markdown: string): string {
 export function extractImageFilenames(imageFilenames: Set<string>) {
   return (post: { filename: string, markdown: string }) => {
     // matches the URL in a markdown image tag like `![alt text](<url>)`
-    const pattern = /^!\[.*\]\((?<filename>[\w\/-]+\.\w+)\)$/gm;
+    const pattern = /^!\[.*\]\((?<filename>.+\.\w+)\)$/gm;
     let result
 
     while((result = pattern.exec(post.markdown)) !== null) {
@@ -138,7 +138,7 @@ export function extractImageFilenames(imageFilenames: Set<string>) {
  */
 function rewriteImageRefs(filename: string): (markdown: string) => string {
   return (markdown: string) =>{
-    return markdown.replace(/\[image:.*\/([\w-]+)\.(\w+)\]$/gm, `![$1](${path.join(config.assetsUrl, filename)}/$1.$2)`);
+    return markdown.replace(/!\[.*\]\((.+)\.(\w+)\)$/gm, `![$1](${path.join(config.assetsUrl, filename)}/$1.$2)`);
   }
 }
 

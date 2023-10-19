@@ -113,6 +113,10 @@
 		@apply text-yellow-400 break-words;
 	}
 
+	.prose p > img {
+		@apply border-2 border-green-400 rounded-bl-2xl rounded-tr-2xl;
+	}
+
 	.prose a code {
 		@apply text-inherit;
 	}

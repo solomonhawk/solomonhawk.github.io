@@ -8,7 +8,7 @@ type Config = {
 
 const config: Config = {
   blogTagPattern: '^(blog\/solomonhawk\/?)|(blog\/?)',
-  // XXX: this isn't great - is there a better way to find the images that were
+  // XXX: this isn't great - is there a better way to find files that were
   // embedded in a bear post?
   imageSearchPaths: [
     "~/Downloads",
