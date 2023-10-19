@@ -4,10 +4,10 @@ import '../styles/index.css';
 export interface Props {
   title: string;
   description: string;
-  permalink: string;
 }
 
-const { title, description, permalink } = Astro.props;
+const { title, description } = Astro.props;
+const permalink = new URL(Astro.url, Astro.site).toString();
 ---
 
 <!-- Global Metadata -->
@@ -62,6 +62,7 @@ const { title, description, permalink } = Astro.props;
   type="text/partytown"
   async
   src="https://www.googletagmanager.com/gtag/js?id=G-EJ67MTJ8RD"></script>
+
 <script type="text/partytown">
   window.dataLayer = window.dataLayer || [];
   function gtag() {

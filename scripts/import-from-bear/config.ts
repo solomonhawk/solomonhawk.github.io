@@ -1,7 +1,6 @@
 type Config = {
   blogTagPattern: string;
   imageSearchPaths: string[];
-  defaultLayout: string;
   postsPath: string;
   assetsUrl: string;
 };
@@ -11,8 +10,7 @@ const config: Config = {
   // XXX: this isn't great - is there a better way to find files that were
   // embedded in a bear post?
   imageSearchPaths: ['~/Downloads', '~/Documents', '~/Pictures'],
-  defaultLayout: '@/layouts/PostLayout.astro',
-  postsPath: 'src/pages/writing/posts',
+  postsPath: 'src/content/posts',
   assetsUrl: '/assets/images/posts',
 };
 

@@ -5,6 +5,17 @@
 @layer base {
   :root {
     --user-font-scale: 1rem - 16px;
+    --astro-code-color-text: #c9d1d9;
+    --astro-code-color-background: #0d1117;
+    --astro-code-token-constant: #79b8ff;
+    --astro-code-token-string: #9ecbff;
+    --astro-code-token-comment: #6a737d;
+    --astro-code-token-keyword: #f97583;
+    --astro-code-token-parameter: #e1e4e8;
+    --astro-code-token-function: #e1e4e8;
+    --astro-code-token-string-expression: #79b8ff;
+    --astro-code-token-punctuation: #ffab70;
+    --astro-code-token-link: honeydew;
   }
 
   body {
@@ -123,7 +134,7 @@
   }
 
   .prose ul ul {
-    @apply mt-[1rem] ml-[1rem] md:ml-[1.5rem] lg:ml-[2rem];
+    @apply ml-[1rem] mt-[1rem] md:ml-[1.5rem] lg:ml-[2rem];
   }
 
   .prose strong {
@@ -155,7 +166,7 @@
   }
 
   .blog-tag {
-    @apply rounded-tr rounded-bl bg-transparent px-1 py-0.5 font-mono text-xs font-bold text-gray-400 hover:no-underline focus:no-underline;
+    @apply rounded-bl rounded-tr bg-transparent px-1 py-0.5 font-mono text-xs font-bold text-gray-400 hover:no-underline focus:no-underline;
     @apply before:inline before:text-green-500 before:content-['#'];
     @apply group-hover:bg-green-500 group-hover:text-black group-hover:before:text-black;
     @apply hover:bg-green-500 hover:text-black hover:before:text-black;
@@ -168,9 +179,9 @@
 }
 
 .astro-code {
-  @apply rounded border-2 border-white/10 p-2 md:p-4;
+  @apply rounded border-2 border-white/10 !bg-code p-2 md:p-4;
 }
 
 .code-block-label {
-  @apply -mb-[2px] inline-block rounded-t border-l-2 border-t-2 border-r-2 border-white/10 bg-[#0d1117] p-2 font-mono text-sm text-white/60 md:px-4;
+  @apply -mb-[2px] inline-block rounded-t border-l-2 border-r-2 border-t-2 border-white/10 bg-[#0d1117] p-2 font-mono text-sm text-white/60 md:px-4;
 }

@@ -1,35 +1,17 @@
 {
+  "extends": "astro/tsconfigs/strictest",
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
       "@/data/*": ["src/data/*"],
       "@/components/*": ["src/components/*"],
-      "@/layouts/*": ["src/layouts/*"],
-      "@/types/*": ["src/types/*"]
+      "@/layouts/*": ["src/layouts/*"]
     },
-    "target": "ESNext",
-    "module": "ESNext",
-    "moduleResolution": "node",
     "jsx": "react-jsx",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "noEmit": true,
-    "skipLibCheck": true,
-    "types": [
-      "vite/client",
-      "astro/client"
-    ],
     "noImplicitAny": true,
     "strict": true,
-    "noFallthroughCasesInSwitch": true,
-    "allowSyntheticDefaultImports": true,
-    "strictNullChecks": true,
-    "noUncheckedIndexedAccess": true,
+    "allowSyntheticDefaultImports": true
   },
-  "include": [
-    "src/**/*"
-  ],
-  "exclude": [
-    "node_modules",
-  ]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules"]
 }

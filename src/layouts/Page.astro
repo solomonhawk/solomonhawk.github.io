@@ -3,12 +3,12 @@ import BaseHead from '@/components/BaseHead.astro';
 import PageHeader from '@/components/PageHeader.astro';
 
 const { content } = Astro.props;
-const { title, description, permalink } = content;
+const { title, description } = content;
 ---
 
-<html lang={content.lang || 'en'}>
+<html lang="en">
   <head>
-    <BaseHead {title} {description} {permalink} />
+    <BaseHead {title} {description} />
   </head>
 
   <body>

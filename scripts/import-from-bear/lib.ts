@@ -1,5 +1,4 @@
 import fg from 'fast-glob';
-import { isRight } from 'fp-ts/lib/Either';
 import { pipe } from 'fp-ts/lib/function';
 import * as O from 'fp-ts/Option';
 import fs from 'fs';
@@ -7,7 +6,7 @@ import GithubSlugger from 'github-slugger';
 import os from 'os';
 import path from 'path';
 
-import { PostData, PostSchema } from '../../src/types/post';
+import { type Post, postSchema } from '../../src/data/posts/schema';
 import config from './config';
 
 const slugger = new GithubSlugger();
@@ -33,10 +32,10 @@ export async function readJSONFromStdIn(): Promise<DBPost[]> {
   return JSON.parse(data);
 }
 
-export function parsePost(post: DBPost): O.Option<PostData> {
+export function parsePost(post: DBPost): O.Option<Post> {
   console.log(`> Parsing "${post.title}" from JSON`);
 
-  const postData: PostData = {
+  const postData: Post = {
     title: post.title,
     // TODO: can I do better to determine a description for this post?
     description: post.title,
@@ -45,7 +44,7 @@ export function parsePost(post: DBPost): O.Option<PostData> {
     tags: filterBearTags(JSON.parse(post.tags) || []),
   };
 
-  if (isRight(PostSchema.decode(postData))) {
+  if (postSchema.safeParse(postData).success) {
     return O.some(postData);
   }
 
@@ -54,10 +53,10 @@ export function parsePost(post: DBPost): O.Option<PostData> {
   return O.none;
 }
 
-function postDate(date: number): string {
+function postDate(date: number): Date {
   const d = new Date(date);
   d.setHours(0, 0, 0, 0);
-  return d.toISOString();
+  return d;
 }
 
 /**
@@ -74,7 +73,7 @@ function filterBearTags(tags: string[]): string[] {
     .filter((tag) => tag !== 'published');
 }
 
-export function convertToMarkdown(post: PostData): {
+export function convertToMarkdown(post: Post): {
   filename: string;
   markdown: string;
 } {
@@ -85,9 +84,9 @@ export function convertToMarkdown(post: PostData): {
   return {
     filename,
     markdown: `---
-layout: '${config.defaultLayout}'
 title: ${post.title}
 publishDate: ${post.publishDate}
+description: ${post.description}
 tags: [${post.tags?.join(', ')}]
 ---
 ${pipe(

@@ -5,9 +5,9 @@ module.exports = {
     es6: true,
   },
   extends: [
+    'plugin:prettier/recommended',
     'plugin:astro/recommended',
     'plugin:astro/jsx-a11y-strict',
-    'plugin:prettier/recommended',
   ],
   plugins: ['simple-import-sort'],
   rules: {

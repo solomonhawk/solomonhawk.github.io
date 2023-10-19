@@ -1,22 +1,24 @@
 ---
-import type { GetStaticPathsOptions } from 'astro';
+import type {
+  GetStaticPaths,
+  InferGetStaticParamsType,
+  InferGetStaticPropsType,
+} from 'astro';
+import { getCollection } from 'astro:content';
 
 import Pagination from '@/components/Pagination.astro';
 import PostPreview from '@/components/PostPreview.astro';
 import { filterDrafts, sortPosts } from '@/data/posts';
 import { groupTagsByCount } from '@/data/tags';
 import PageLayout from '@/layouts/Page.astro';
-import type { Post } from '@/types/post';
 
-export async function getStaticPaths({ paginate }: GetStaticPathsOptions) {
-  const posts: Post[] = await Astro.glob('../../posts/*.mdx');
+export const getStaticPaths = (async ({ paginate }) => {
+  const posts = await getCollection('posts');
   const tags = groupTagsByCount(posts);
 
-  return tags.map((t) => {
+  return tags.flatMap((t) => {
     const taggedPosts = filterDrafts(
-      sortPosts(
-        posts.filter((post) => (post.frontmatter.tags || []).includes(t.tag)),
-      ),
+      sortPosts(posts.filter((post) => (post.data.tags || []).includes(t.tag))),
     );
 
     return paginate(taggedPosts, {
@@ -25,10 +27,13 @@ export async function getStaticPaths({ paginate }: GetStaticPathsOptions) {
       pageSize: 10,
     });
   });
-}
+}) satisfies GetStaticPaths;
 
-const { page, count, description } = Astro.props;
-const { tag } = Astro.params;
+type Params = InferGetStaticParamsType<typeof getStaticPaths>;
+type Props = InferGetStaticPropsType<typeof getStaticPaths>;
+
+const { page, count, description } = Astro.props as Props;
+const { tag } = Astro.params as Params;
 
 let title = `Solomon Hawk - Writing Tag ${tag}`;
 let permalink = new URL(Astro.url.pathname, Astro.site);
@@ -48,7 +53,7 @@ let permalink = new URL(Astro.url.pathname, Astro.site);
     </h2>
 
     <div class="space-y-8 md:space-y-12">
-      {page.data.map((post: Post) => <PostPreview post={post} />)}
+      {page.data.map((post) => <PostPreview post={post} />)}
     </div>
 
     <Pagination url={page.url} />
