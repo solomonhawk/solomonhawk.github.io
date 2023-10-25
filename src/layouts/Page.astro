@@ -1,4 +1,6 @@
 ---
+import { ViewTransitions } from 'astro:transitions';
+
 import BaseHead from '@/components/BaseHead.astro';
 import PageHeader from '@/components/PageHeader.astro';
 
@@ -9,6 +11,7 @@ const { title, description } = content;
 <html lang="en">
   <head>
     <BaseHead {title} {description} />
+    <ViewTransitions />
   </head>
 
   <body>
