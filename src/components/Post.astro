@@ -24,11 +24,7 @@ const { title, publishDate, tags, slug } = Astro.props;
       }
     </p>
 
-    <h2
-      class="h1 mb-2 text-yellow-400"
-      transition:name={`post-title-${slug}`}
-      transition:animate="initial"
-    >
+    <h2 class="h1 mb-2 text-yellow-400" transition:name={`post-title-${slug}`}>
       {title}
     </h2>
 
@@ -37,7 +33,6 @@ const { title, publishDate, tags, slug } = Astro.props;
         <div
           class="blog-tags my-4 md:my-6"
           transition:name={`post-tags-${slug}`}
-          transition:animate="initial"
         >
           {tags.map(
             (tag: string) =>
