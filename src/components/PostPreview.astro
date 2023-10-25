@@ -17,6 +17,7 @@ const { post } = Astro.props;
     <header>
       <p
         class="mb-1 font-mono text-sm text-gray-400 group-hover:text-green-500 md:mb-2"
+        transition:name={`post-date-${post.slug}`}
       >
         {
           new Date(post.data.publishDate).toLocaleDateString('en-US', {
@@ -27,14 +28,17 @@ const { post } = Astro.props;
         }
       </p>
 
-      <h1 class="h1 mb-2 decoration-green-500 group-hover:underline">
+      <h1
+        class="h1 mb-2 decoration-green-500 group-hover:underline"
+        transition:name={`post-title-${post.slug}`}
+      >
         {post.data.title}
       </h1>
     </header>
 
     {
       post.data.tags ? (
-        <div class="blog-tags my-2">
+        <div class="blog-tags my-2" transition:name={`post-tags-${post.slug}`}>
           {post.data.tags.map((tag) => (
             <span class="blog-tag">{tag}</span>
           ))}
