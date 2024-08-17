@@ -1,4 +1,5 @@
 ---
+import SpeedInsights from '@vercel/speed-insights/astro';
 import type { CollectionEntry } from 'astro:content';
 import { ViewTransitions } from 'astro:transitions';
 
@@ -38,5 +39,7 @@ const { title, description, publishDate, tags } = frontmatter;
         <Logo class="mx-auto block h-8 w-8" />
       </a>
     </footer>
+
+    <SpeedInsights />
   </body>
 </html>

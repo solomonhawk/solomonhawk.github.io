@@ -1,4 +1,5 @@
 ---
+import SpeedInsights from '@vercel/speed-insights/astro';
 import { ViewTransitions } from 'astro:transitions';
 
 import BaseHead from '@/components/BaseHead.astro';
@@ -28,5 +29,7 @@ const { title, description } = content;
         </div>
       </div>
     </main>
+
+    <SpeedInsights />
   </body>
 </html>
